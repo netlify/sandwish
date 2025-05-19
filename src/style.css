@@ -92,7 +92,6 @@ header::before {
   margin: 0;
   text-shadow: 3px 3px 0 var(--color-secondary);
   letter-spacing: 2px;
-  word-wrap: break-word;
   max-width: 100%;
   line-height: 1.1;
 }
@@ -101,6 +100,16 @@ header::before {
   font-size: 1.5rem;
   color: var(--color-text);
   margin: 0;
+}
+
+@media screen and (max-width: 900px) {
+  .title-display {
+    font-size: 3rem;
+  }
+
+  .author-display {
+    font-size: 1rem;
+  }
 }
 
 .author-prefix {
@@ -229,7 +238,13 @@ main {
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding-top: 20vw;
+  padding-top: 40vw;
+}
+
+@media (max-width: 900px) {
+  .sandwich-builder {
+    padding-top: 48vw;
+  }
 }
 
 .layer-wrapper {
@@ -245,6 +260,8 @@ main {
 
 .layer-wrapper img {
   margin: 0 auto;
+  position: absolute;
+  bottom: 0;
 }
 
 body.edit-mode .layer-wrapper {
@@ -499,7 +516,13 @@ body.edit-mode .edit-button {
 #sandwich-preview {
   display: flex;
   flex-direction: column;
-  gap: 120px;
+  gap: 100px;
+}
+
+@media screen and (max-width: 900px) {
+  #sandwich-preview {
+    gap: 10vw;
+  }
 }
 
 #sandwich-preview img {
@@ -511,7 +534,7 @@ body.edit-mode .edit-button {
 }
 
 #plate {
-  height: 200px;
+  height: 0;
   position: relative;
 }
 
@@ -519,9 +542,16 @@ body.edit-mode .edit-button {
   width:900px;
   max-width: 80%;
   position: absolute;
-  transform: translate(-50%, 32%);
+  transform: translate(-50%, 30%);
   left: 50%;
   bottom: 0;
+}
+
+@media screen and (max-width: 900px) {
+  #plate img {
+    width: 600px;
+    max-width: 100%;
+  }
 }
 
 .recipe-panel {
@@ -545,7 +575,11 @@ footer {
   position: relative;
 }
 
-
+@media screen and (max-width: 900px) {
+  footer {
+    margin-bottom: 20vw;
+  }
+}
 
 footer p {
   margin: 0;
@@ -570,7 +604,7 @@ a:hover {
   border-radius: 2rem;
   box-shadow: var(--shadow-main);
   border: 8px solid var(--color-primary);
-  margin: 14vw auto 2rem auto;
+  margin: 20vw auto 2rem auto;
   max-width: 600px;
   position: relative;
   font-size: 1.2rem;
