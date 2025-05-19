@@ -11,7 +11,12 @@ interface Ingredient {
 type IngredientType = "bread" | "filling";
 
 class SandwichBuilder {
+  private titleDisplay: HTMLHeadingElement;
+  private titleEdit: HTMLInputElement;
+  private authorDisplay: HTMLElement;
   private authorEdit: HTMLInputElement;
+  private stateSnapshot: string;
+
   private breadIngredients: Ingredient[] = [
     {
       id: "bread-bagel-plain",
@@ -572,6 +577,7 @@ class SandwichBuilder {
   private previewElement: HTMLDivElement;
   private ingredientsList: HTMLUListElement;
   private loadingElement: HTMLDivElement;
+  private editButton: HTMLButtonElement;
 
   constructor(urlPath: string) {
     this.previewElement = document.querySelector(
@@ -580,14 +586,24 @@ class SandwichBuilder {
     this.ingredientsList = document.querySelector(
       "#ingredients-list"
     ) as HTMLUListElement;
+    this.authorDisplay = document.querySelector("#author") as HTMLElement;
     this.authorEdit = document.querySelector(
       ".author-edit"
     ) as HTMLInputElement;
+    this.titleEdit = document.querySelector(".title-edit") as HTMLInputElement;
     this.loadingElement = document.querySelector(
       "#loading-screen"
     ) as HTMLDivElement;
+    this.titleDisplay = document.querySelector(
+      ".title-display"
+    ) as HTMLHeadingElement;
+    this.editButton = document.querySelector(
+      ".edit-button"
+    ) as HTMLButtonElement;
 
     const isRootPath = urlPath === "/";
+
+    this.stateSnapshot = "";
 
     // Add initial bread layers
     this.fillingLayers = isRootPath
@@ -599,9 +615,6 @@ class SandwichBuilder {
 
     // Add buttons
     const addButton = document.querySelector(".add-layer") as HTMLButtonElement;
-    const editButton = document.querySelector(
-      ".edit-button"
-    ) as HTMLButtonElement;
 
     addButton.addEventListener("click", () => {
       this.addLayer();
@@ -619,7 +632,7 @@ class SandwichBuilder {
       this.updateSandwich();
     });
 
-    editButton.addEventListener("click", () => {
+    this.editButton.addEventListener("click", () => {
       const isEditMode = this.toggleEditMode();
 
       if (!isEditMode) {
@@ -655,71 +668,85 @@ class SandwichBuilder {
     this.loadingElement.classList.toggle("hidden", isLoaded);
   }
 
-  private async save() {
-    const titleDisplay = document.querySelector(
-      ".title-display"
-    ) as HTMLHeadingElement;
+  private serializeState() {
     const bread = this.breadIngredients[this.fillingLayers[0].index].id;
     const fillings = this.fillingLayers
       .filter((layer) => layer.type === "filling")
       .map((layer) => this.fillingIngredients[layer.index].id);
-    const response = await fetch("/sandwich", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        title: titleDisplay.textContent,
-        author: this.authorEdit.value.trim(),
-        bread,
-        fillings
-      })
-    });
 
-    if (response.ok) {
-      const state = await response.json();
-      window.history.pushState({}, "", `/${state.slug}`);
+    return JSON.stringify({
+      title: this.titleDisplay.textContent,
+      author: this.authorEdit.value.trim(),
+      bread,
+      fillings
+    });
+  }
+
+  private async save() {
+    const newState = this.serializeState();
+    if (newState === this.stateSnapshot) {
+      console.log("State has not changed, skipping backend call");
+
+      return;
+    }
+
+    try {
+      console.log("Saving state...");
+
+      const response = await fetch("/sandwich", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: newState
+      });
+
+      if (response.ok) {
+        const state = await response.json();
+
+        console.log("State saved successfully!");
+
+        window.history.pushState({}, "", `/${state.slug}`);
+
+        alert(
+          "Yummy! Use the unique link in the address bar to share your creation with the world."
+        );
+      }
+    } catch (error) {
+      console.error("Failed to save state:", error);
     }
   }
 
   private async loadState(urlPath: string) {
     const slug = urlPath.slice(1);
-    const response = await fetch(`/sandwich/${slug}`);
 
-    if (response.ok) {
-      const state = await response.json();
+    try {
+      const response = await fetch(`/sandwich/${slug}`);
 
-      this.setState(state);
-      this.setLoadingState(true);
-    }
+      if (response.ok) {
+        const state = await response.json();
+
+        this.setState(state);
+        this.setLoadingState(true);
+      }
+    } catch {}
   }
 
   public toggleEditMode(): boolean {
-    const editButton = document.querySelector(
-      ".edit-button"
-    ) as HTMLButtonElement;
     const isEditMode = document.body.classList.toggle("edit-mode");
-    editButton.textContent = isEditMode ? "Save" : "Edit";
 
-    if (!isEditMode) {
+    this.editButton.textContent = isEditMode ? "Save" : "Edit";
+
+    if (isEditMode) {
+      this.stateSnapshot = this.serializeState();
+    } else {
       // Save the title and tagline when exiting edit mode
-      const titleEdit = document.querySelector(
-        ".title-edit"
-      ) as HTMLInputElement;
-      const authorEdit = document.querySelector(
-        ".author-edit"
-      ) as HTMLInputElement;
-      const titleDisplay = document.querySelector(
-        ".title-display"
-      ) as HTMLElement;
-      const authorDisplay = document.querySelector("#author") as HTMLElement;
-
-      if (titleEdit.value.trim()) {
-        titleDisplay.textContent = titleEdit.value;
+      if (this.titleEdit.value.trim()) {
+        this.titleDisplay.textContent = this.titleEdit.value;
       }
 
-      if (authorEdit.value.trim()) {
-        authorDisplay.textContent = authorEdit.value;
+      if (this.authorEdit.value.trim()) {
+        this.authorDisplay.textContent = this.authorEdit.value;
       }
     }
 
