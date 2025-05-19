@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+
+    <!-- Primary Meta Tags -->
+    <meta name="title" content="Sandwish" />
+    <meta name="description" content="Choose the best ingredients and share your creation with the world" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Sandwish" />
+    <meta property="og:description" content="Choose the best ingredients and share your creation with the world" />
+    <meta property="og:image" content="/favicon.png" />
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content="Sandwish" />
+    <meta property="twitter:description" content="Choose the best ingredients and share your creation with the world" />
+    <meta property="twitter:image" content="/favicon.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Poppins:wght@400;600&family=Kalam:wght@400;700&family=Permanent+Marker&display=swap"
+      rel="stylesheet"
+    />
+    <title>Sandwish</title>
+  </head>
+  <body>
+    <div id="app">
+      <header>
+        <div class="title-wrapper">
+          <h1 class="title-display">The Full Stacker</h1>
+          <input type="text" class="title-edit" value="The Full Stacker" />
+        </div>
+        <div class="author-wrapper">
+          <p class="author-display">
+            <span id="author">Someone</span
+            ><span class="author-prefix"
+              >'s sand<span class="wish">wish</span></span
+            >
+          </p>
+          <div class="author-edit-wrapper">
+            <input type="text" class="author-edit" value="Someone" />
+            <span class="author-prefix"
+              >'s sand<span class="wish">wish</span></span
+            >
+          </div>
+        </div>
+      </header>
+      <main>
+        <div class="sandwich-builder">
+          <div id="sandwich-preview"></div>
+          <div id="plate">
+            <img src="/plate.png" />
+          </div>
+          <div class="ingredients-section">
+            <h2>Ingredients</h2>
+            <ul id="ingredients-list" class="ingredients-list"></ul>
+          </div>
+        </div>
+      </main>
+    </div>
+    <footer>
+      <p>
+        Vibe-coded with
+        <a href="https://windsurf.io" target="_blank">Windsurf</a> on
+        <a href="https://vitejs.dev" target="_blank">Vite</a> +
+        <a href="https://netlify.com" target="_blank">Netlify</a>
+      </p>
+    </footer>
+    <div class="floating-buttons right">
+      <button class="add-layer">Add layer</button>
+      <button class="reset-button">Reset</button>
+      <button class="edit-button">Edit</button>
+    </div>
+    <div class="floating-buttons left">
+      <button class="help-button" aria-label="Help">?</button>
+      <div class="help-tooltip">
+        <p>
+          You have a signature combination of sandwich ingredients that the
+          world must know about — it's your <strong>sandwish</strong>.
+        </p>
+        <p>To create your own:</p>
+        <ol>
+          <li>Click "Edit" to get behind the counter</li>
+          <li>Click "Add layer" and start adding ingredients</li>
+          <li>Set your name and the name of your sandwish</li>
+          <li>Click "Save" to get a shareable link</li>
+        </ol>
+        <p>Anyone with the link can see your beautiful creation.</p>
+      </div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
