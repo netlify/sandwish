@@ -571,6 +571,7 @@ class SandwichBuilder {
   private fillingLayers: { index: number; type: IngredientType }[] = [];
   private previewElement: HTMLDivElement;
   private ingredientsList: HTMLUListElement;
+  private loadingElement: HTMLDivElement;
 
   constructor(urlPath: string) {
     this.previewElement = document.querySelector(
@@ -582,15 +583,19 @@ class SandwichBuilder {
     this.authorEdit = document.querySelector(
       ".author-edit"
     ) as HTMLInputElement;
+    this.loadingElement = document.querySelector(
+      "#loading-screen"
+    ) as HTMLDivElement;
+
+    const isRootPath = urlPath === "/";
 
     // Add initial bread layers
-    this.fillingLayers =
-      urlPath === "/"
-        ? [
-            { index: 0, type: "bread" },
-            { index: 0, type: "bread" }
-          ]
-        : [];
+    this.fillingLayers = isRootPath
+      ? [
+          { index: 0, type: "bread" },
+          { index: 0, type: "bread" }
+        ]
+      : [];
 
     // Add buttons
     const addButton = document.querySelector(".add-layer") as HTMLButtonElement;
@@ -603,10 +608,14 @@ class SandwichBuilder {
       this.updateSandwich();
     });
 
-    const resetButton = document.querySelector(".reset-button") as HTMLButtonElement;
+    const resetButton = document.querySelector(
+      ".reset-button"
+    ) as HTMLButtonElement;
     resetButton.addEventListener("click", () => {
       // Keep only the bread layers
-      this.fillingLayers = this.fillingLayers.filter(layer => layer.type === "bread");
+      this.fillingLayers = this.fillingLayers.filter(
+        (layer) => layer.type === "bread"
+      );
       this.updateSandwich();
     });
 
@@ -636,9 +645,14 @@ class SandwichBuilder {
 
     if (urlPath === "/") {
       this.toggleEditMode();
+      this.setLoadingState(true);
     } else {
       this.loadState(urlPath);
     }
+  }
+
+  private setLoadingState(isLoaded: boolean) {
+    this.loadingElement.classList.toggle("hidden", isLoaded);
   }
 
   private async save() {
@@ -676,6 +690,7 @@ class SandwichBuilder {
       const state = await response.json();
 
       this.setState(state);
+      this.setLoadingState(true);
     }
   }
 
@@ -937,7 +952,9 @@ window.addEventListener("load", async () => {
   new SandwichBuilder(window.location.pathname);
 
   // Help tooltip functionality
-  const helpButton = document.querySelector(".help-button") as HTMLButtonElement;
+  const helpButton = document.querySelector(
+    ".help-button"
+  ) as HTMLButtonElement;
   const helpTooltip = document.querySelector(".help-tooltip") as HTMLDivElement;
 
   helpButton.addEventListener("click", (event) => {
