@@ -9,9 +9,9 @@ export default async (req: Request) => {
   const store = getStore("sandwiches");
 
   const payload = (await req.json()) as Creation;
-  const { author, bread, fillings, title } = payload;
+  const { bread, fillings, title } = payload;
 
-  if (!title || !author || !bread || !fillings) {
+  if (!title || !bread || !fillings) {
     return new Response(null, { status: 400 });
   }
 

@@ -197,6 +197,14 @@ body.edit-mode .intro-text {
   text-align: center;
 }
 
+@media screen and (max-width: 900px) {
+  body.edit-mode header,
+  body.edit-mode .ingredients-section,
+  body.edit-mode footer {
+    display: none;
+  }
+}
+
 body.edit-mode .title-display,
 body.edit-mode .author-display {
   display: none;
@@ -377,6 +385,12 @@ body.edit-mode .floating-buttons button {
   transform: scale(0.9);
   pointer-events: none;
   transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+@media (max-width: 900px) {
+  .help-tooltip {
+    max-width: 260px;
+  }
 }
 
 .help-tooltip.active {

@@ -673,18 +673,21 @@ class SandwichBuilder {
     const fillings = this.fillingLayers
       .filter((layer) => layer.type === "filling")
       .map((layer) => this.fillingIngredients[layer.index].id);
-
-    return JSON.stringify({
+    const state = {
       title: this.titleDisplay.textContent,
       author: this.authorEdit.value.trim(),
       bread,
       fillings
-    });
+    };
+
+    return state;
   }
 
   private async save() {
     const newState = this.serializeState();
-    if (newState === this.stateSnapshot) {
+    const stringifiedState = JSON.stringify(newState);
+
+    if (stringifiedState === this.stateSnapshot) {
       console.log("State has not changed, skipping backend call");
 
       return;
@@ -698,7 +701,7 @@ class SandwichBuilder {
         headers: {
           "Content-Type": "application/json"
         },
-        body: newState
+        body: stringifiedState
       });
 
       if (response.ok) {
@@ -734,12 +737,25 @@ class SandwichBuilder {
 
   public toggleEditMode(): boolean {
     const isEditMode = document.body.classList.toggle("edit-mode");
+    const isMobile = window.innerWidth <= 900;
 
     this.editButton.textContent = isEditMode ? "Save" : "Edit";
 
     if (isEditMode) {
-      this.stateSnapshot = this.serializeState();
+      this.stateSnapshot = JSON.stringify(this.serializeState());
     } else {
+      if (isMobile) {
+        const title = window.prompt("What is the name of your creation?");
+        const author = window.prompt("What is your name?");
+
+        this.titleEdit.value = (title || "").trim();
+        this.authorEdit.value = (author || "").trim();
+      } else {
+        if (!this.authorEdit.value.trim()) {
+          this.authorEdit.value = (prompt("What is your name?") || "").trim();
+        }
+      }
+
       // Save the title and tagline when exiting edit mode
       if (this.titleEdit.value.trim()) {
         this.titleDisplay.textContent = this.titleEdit.value;
@@ -811,21 +827,10 @@ class SandwichBuilder {
   }
 
   public setState(state: State): void {
-    const titleDisplay = document.querySelector(
-      ".title-display"
-    ) as HTMLHeadingElement;
-    const titleEdit = document.querySelector(".title-edit") as HTMLInputElement;
-    const authorDisplay = document.querySelector(
-      ".author-display"
-    ) as HTMLParagraphElement;
-    const authorEdit = document.querySelector(
-      ".author-edit"
-    ) as HTMLInputElement;
-
-    titleDisplay.textContent = state.title;
-    titleEdit.value = state.title;
-    authorDisplay.innerHTML = `${state.author}<span class="author-prefix">'s sand<span class="wish">wish</span></span>`;
-    authorEdit.value = state.author;
+    this.titleDisplay.textContent = state.title;
+    this.titleEdit.value = state.title;
+    this.authorDisplay.textContent = state.author || "Someone";
+    this.authorEdit.value = state.author || "";
 
     this.fillingLayers = [];
 
