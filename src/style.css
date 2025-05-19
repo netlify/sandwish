@@ -206,25 +206,16 @@ body.edit-mode .intro-text {
   text-align: center;
 }
 
-@media screen and (max-width: 900px) {
-  body.edit-mode header,
-  body.edit-mode .ingredients-section,
-  body.edit-mode footer {
+@media screen and (min-width: 901px) {
+  body.edit-mode .title-display,
+  body.edit-mode .author-display {
     display: none;
   }
-}
-
-body.edit-mode .title-display,
-body.edit-mode .author-display {
-  display: none;
-}
-
-body.edit-mode .title-edit {
-  display: block;
-}
-
-body.edit-mode .author-edit-wrapper {
-  display: block;
+  
+  body.edit-mode .title-edit,
+  body.edit-mode .author-edit-wrapper {
+    display: block;
+  }
 }
 
 main {
@@ -241,9 +232,17 @@ main {
   padding-top: 40vw;
 }
 
+body.edit-mode .sandwich-builder {
+  padding-top: 20vw;
+}
+
 @media (max-width: 900px) {
   .sandwich-builder {
     padding-top: 48vw;
+  }
+
+  body.edit-mode .sandwich-builder {
+    padding-top: 10vw;
   }
 }
 
