@@ -186,33 +186,6 @@ class SandwichBuilder {
         // Update URL
         window.history.pushState({}, "", `/${state.slug}`);
 
-        // Update OpenGraph tags
-        const titleMeta = document.querySelector('meta[property="og:title"]');
-        const imageMeta = document.querySelector('meta[property="og:image"]');
-
-        if (titleMeta) {
-          titleMeta.setAttribute(
-            "content",
-            this.titleDisplay.textContent || "A Sandwish"
-          );
-        }
-
-        if (imageMeta) {
-          // Get bread and filling IDs
-          const bread = this.breadIngredients[this.fillingLayers[0].index].id;
-          const fillings = this.fillingLayers
-            .filter((layer) => layer.type === "filling")
-            .slice(0, MAX_INGREDIENTS_IN_PREVIEW)
-            .map((layer) => this.fillingIngredients[layer.index].id)
-            .reverse()
-            .join(",");
-
-          // Update image URL
-          const baseUrl = window.location.origin;
-          const imageUrl = `${baseUrl}/sandwich-preview/${bread}/${fillings}`;
-          imageMeta.setAttribute("content", imageUrl);
-        }
-
         window.prompt(
           "Yummy! Use this unique link to share your creation with the world:",
           document.URL
@@ -236,6 +209,35 @@ class SandwichBuilder {
         this.setLoadingState(true);
       }
     } catch {}
+  }
+
+  private updateMeta() {
+    // Update OpenGraph tags
+    const titleMeta = document.querySelector('meta[property="og:title"]');
+    const imageMeta = document.querySelector('meta[property="og:image"]');
+
+    if (titleMeta) {
+      titleMeta.setAttribute(
+        "content",
+        this.titleDisplay.textContent || "A Sandwish"
+      );
+    }
+
+    if (imageMeta) {
+      // Get bread and filling IDs
+      const bread = this.breadIngredients[this.fillingLayers[0].index].id;
+      const fillings = [...this.fillingLayers]
+        .filter((layer) => layer.type === "filling")
+        .slice(0, MAX_INGREDIENTS_IN_PREVIEW)
+        .map((layer) => this.fillingIngredients[layer.index].id)
+        .reverse()
+        .join(",");
+
+      // Update image URL
+      const baseUrl = window.location.origin;
+      const imageUrl = `${baseUrl}/sandwich-preview/${bread}/${fillings}`;
+      imageMeta.setAttribute("content", imageUrl);
+    }
   }
 
   public toggleEditMode(): boolean {
@@ -358,6 +360,7 @@ class SandwichBuilder {
 
     this.fillingLayers.push({ index: breadIndex, type: "bread" });
 
+    this.updateMeta();
     this.updateSandwich();
   }
 
