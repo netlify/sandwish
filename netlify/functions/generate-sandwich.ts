@@ -6,9 +6,9 @@ import {
   MAX_INGREDIENTS_IN_PREVIEW
 } from "../../src/ingredients";
 
-const CANVAS_SIZE = 300;
-const IMAGE_SIZE = 200; // Smaller base size for ingredients
-const SPACING = 20;
+const CANVAS_SIZE = 1200;
+const IMAGE_SIZE = 800; // Smaller base size for ingredients
+const SPACING = 80;
 
 export default async (req: Request, context: Context) => {
   try {
