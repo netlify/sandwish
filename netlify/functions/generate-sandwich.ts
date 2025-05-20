@@ -160,7 +160,8 @@ export default async (req: Request, context: Context) => {
     return new Response(result, {
       headers: {
         "CDN-Cache-Control": "public,max-age=31556952,durable",
-        "Content-Type": "image/png"
+        "Content-Type": "image/png",
+        "Content-Length": result.byteLength.toString()
       }
     });
   } catch (error) {
