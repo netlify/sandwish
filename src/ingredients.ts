@@ -546,3 +546,5 @@ export const fillings: Ingredient[] = [
     scale: 0.6325
   }
 ];
+
+export const MAX_INGREDIENTS_IN_PREVIEW = 12;

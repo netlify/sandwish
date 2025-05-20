@@ -1,11 +1,14 @@
 import { Config, Context } from "@netlify/functions";
 import sharp from "sharp";
-import { breads, fillings } from "../../src/ingredients";
+import {
+  breads,
+  fillings,
+  MAX_INGREDIENTS_IN_PREVIEW
+} from "../../src/ingredients";
 
 const CANVAS_SIZE = 300;
 const IMAGE_SIZE = 200; // Smaller base size for ingredients
-const MAX_INGREDIENTS = 8;
-const SPACING = 30;
+const SPACING = 20;
 
 export default async (req: Request, context: Context) => {
   try {
@@ -20,7 +23,7 @@ export default async (req: Request, context: Context) => {
     }
 
     const fillingIngredients = fillingIds
-      .slice(0, MAX_INGREDIENTS)
+      .slice(0, MAX_INGREDIENTS_IN_PREVIEW)
       .map((id) => {
         const ingredient = fillings.find((f) => f.id === id);
         if (!ingredient) {
@@ -39,7 +42,7 @@ export default async (req: Request, context: Context) => {
 
     const totalHeight =
       breadDimensions + (fillingIngredients.length + 1) * SPACING;
-    const marginY = (CANVAS_SIZE - totalHeight) / 2;
+    const marginY = Math.round((CANVAS_SIZE - totalHeight) / 2);
 
     let currentY = Math.max(0, marginY);
 
