@@ -215,12 +215,23 @@ class SandwichBuilder {
     // Update OpenGraph tags
     const titleMeta = document.querySelector('meta[property="og:title"]');
     const imageMeta = document.querySelector('meta[property="og:image"]');
+    const descriptionMeta = document.querySelector('meta[property="og:description"]');
+    const twitterDescriptionMeta = document.querySelector('meta[property="twitter:description"]');
 
     if (titleMeta) {
       titleMeta.setAttribute(
         "content",
         this.titleDisplay.textContent || "A Sandwish"
       );
+    }
+
+    // Update description with author
+    const description = `A truly delicious creation by ${this.authorDisplay.textContent || 'Anonymous'}`;
+    if (descriptionMeta) {
+      descriptionMeta.setAttribute('content', description);
+    }
+    if (twitterDescriptionMeta) {
+      twitterDescriptionMeta.setAttribute('content', description);
     }
 
     if (imageMeta) {
