@@ -603,13 +603,25 @@ class SandwichBuilder {
 
     const isRootPath = urlPath === "/";
 
+    // Show help tooltip by default on root path
+    if (isRootPath) {
+      const helpTooltip = document.querySelector(
+        ".help-tooltip"
+      ) as HTMLDivElement;
+      const helpButton = document.querySelector(
+        ".help-button"
+      ) as HTMLButtonElement;
+      helpTooltip.classList.add("active");
+      helpButton.textContent = "×";
+    }
+
     this.stateSnapshot = "";
 
     // Add initial bread layers
     this.fillingLayers = isRootPath
       ? [
-          { index: 0, type: "bread" },
-          { index: 0, type: "bread" }
+          { index: 9, type: "bread" },
+          { index: 9, type: "bread" }
         ]
       : [];
 
@@ -711,8 +723,9 @@ class SandwichBuilder {
 
         window.history.pushState({}, "", `/${state.slug}`);
 
-        alert(
-          "Yummy! Use the unique link in the address bar to share your creation with the world."
+        window.prompt(
+          "Yummy! Use this unique link to share your creation with the world:",
+          document.URL
         );
       }
     } catch (error) {
@@ -992,6 +1005,9 @@ window.addEventListener("load", async () => {
   helpButton.addEventListener("click", (event) => {
     event.stopPropagation();
     helpTooltip.classList.toggle("active");
+    helpButton.textContent = helpTooltip.classList.contains("active")
+      ? "×"
+      : "?";
   });
 
   helpTooltip.addEventListener("click", (event) => {
@@ -1000,5 +1016,6 @@ window.addEventListener("load", async () => {
 
   document.addEventListener("click", () => {
     helpTooltip.classList.remove("active");
+    helpButton.textContent = "?";
   });
 });

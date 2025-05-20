@@ -112,14 +112,6 @@ header::before {
   }
 }
 
-.author-prefix {
-  opacity: 0.7;
-}
-
-.author-prefix {
-  margin-left: 0.5rem;
-}
-
 .wish {
   position: relative;
   display: inline-block;
@@ -207,7 +199,7 @@ body.edit-mode .intro-text {
 }
 
 @media screen and (min-width: 901px) {
-  body.edit-mode .title-display,
+  body.edit-mode .title-wrapper .title-display,
   body.edit-mode .author-display {
     display: none;
   }
@@ -401,6 +393,21 @@ body.edit-mode .floating-buttons button {
   transform: scale(0.9);
   pointer-events: none;
   transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.help-tooltip .title-display {
+  font-size: 2rem;
+  margin: 0 0 1rem;
+}
+
+.help-tooltip::after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 15px;
+  border-width: 10px 10px 0;
+  border-style: solid;
+  border-color: var(--color-background) transparent transparent transparent;
 }
 
 @media (max-width: 900px) {
