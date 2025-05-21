@@ -240,21 +240,28 @@ class SandwichBuilder {
       twitterDescriptionMeta.setAttribute("content", description);
     }
 
-    if (imageMeta) {
-      // Get bread and filling IDs
-      const bread = this.breadIngredients[this.fillingLayers[0].index].id;
-      const fillings = [...this.fillingLayers]
-        .filter((layer) => layer.type === "filling")
-        .slice(0, MAX_INGREDIENTS_IN_PREVIEW)
-        .map((layer) => this.fillingIngredients[layer.index].id)
-        .reverse()
-        .join("/");
+    // Get bread and filling IDs for image URL
+    const bread = this.breadIngredients[this.fillingLayers[0].index].id;
+    const fillings = [...this.fillingLayers]
+      .filter((layer) => layer.type === "filling")
+      .slice(0, MAX_INGREDIENTS_IN_PREVIEW)
+      .map((layer) => this.fillingIngredients[layer.index].id)
+      .reverse()
+      .join("/");
 
-      // Update image URL
-      const baseUrl = window.location.origin;
-      // const imageUrl = `${baseUrl}/sandwich-preview/${bread}/${fillings}`;
-      const imageUrl = `${baseUrl}/.netlify/functions/generate-sandwich-lambda/${bread}/${fillings}.png`;
+    // Create image URL
+    const baseUrl = window.location.origin;
+    const imageUrl = `${baseUrl}/sandwich-preview/${bread}/${fillings}.png`;
+
+    // Update OpenGraph image
+    if (imageMeta) {
       imageMeta.setAttribute("content", imageUrl);
+    }
+
+    // Update Twitter image
+    const twitterImageMeta = document.querySelector('meta[property="twitter:image"]');
+    if (twitterImageMeta) {
+      twitterImageMeta.setAttribute("content", imageUrl);
     }
   }
 

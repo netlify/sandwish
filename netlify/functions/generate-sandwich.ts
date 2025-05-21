@@ -6,15 +6,16 @@ import {
   MAX_INGREDIENTS_IN_PREVIEW
 } from "../../src/ingredients";
 
-const CANVAS_SIZE = 1200;
-const IMAGE_SIZE = 800; // Smaller base size for ingredients
-const SPACING = 80;
+const CANVAS_SIZE = 600;
+const IMAGE_FACTOR = 0.7;
+const SPACING_FACTOR = 0.06;
 
 export default async (req: Request, context: Context) => {
   try {
-    const parts = new URL(req.url).pathname.split("/");
+    const url = new URL(req.url);
+    const parts = url.pathname.split("/");
     const bread = parts[2];
-    const fillingIds = parts[3].split(",");
+    const fillingIds = parts.slice(3);
 
     // Find bread and filling ingredients
     const breadIngredient = breads.find((b) => b.id === bread);
@@ -24,7 +25,8 @@ export default async (req: Request, context: Context) => {
 
     const fillingIngredients = fillingIds
       .slice(0, MAX_INGREDIENTS_IN_PREVIEW)
-      .map((id) => {
+      .map((idAndExtension) => {
+        const [id] = idAndExtension.split(".");
         const ingredient = fillings.find((f) => f.id === id);
         if (!ingredient) {
           throw new Error(`Invalid filling ID: ${id}`);
@@ -37,18 +39,21 @@ export default async (req: Request, context: Context) => {
     const layers: sharp.OverlayOptions[] = [];
 
     // Calculate dimensions and offsets
-    const breadDimensions = Math.round(IMAGE_SIZE * breadIngredient.scale);
+    const breadDimensions = Math.round(
+      CANVAS_SIZE * IMAGE_FACTOR * breadIngredient.scale
+    );
     const breadOffset = (CANVAS_SIZE - breadDimensions) / 2;
 
     const totalHeight =
-      breadDimensions + (fillingIngredients.length + 1) * SPACING;
+      breadDimensions +
+      (fillingIngredients.length + 1) * CANVAS_SIZE * SPACING_FACTOR;
     const marginY = Math.round((CANVAS_SIZE - totalHeight) / 2);
 
     let currentY = Math.max(0, marginY);
 
     // Process top bread first
     // Get base URL from request URL
-    const baseUrl = new URL(req.url).origin;
+    const baseUrl = url.origin;
 
     // Fetch top bread image
     const topFilename =
@@ -70,7 +75,7 @@ export default async (req: Request, context: Context) => {
       blend: "over" as const
     });
 
-    currentY += SPACING;
+    currentY += CANVAS_SIZE * SPACING_FACTOR;
 
     const jobs = fillingIngredients.map(async (filling) => {
       // Fetch filling image
@@ -79,8 +84,8 @@ export default async (req: Request, context: Context) => {
       );
       const fillingBuffer = await sharp(await fillingResponse.arrayBuffer())
         .resize(
-          Math.round(IMAGE_SIZE * filling.scale),
-          Math.round(IMAGE_SIZE * filling.scale),
+          Math.round(CANVAS_SIZE * IMAGE_FACTOR * filling.scale),
+          Math.round(CANVAS_SIZE * IMAGE_FACTOR * filling.scale),
           {
             fit: "contain",
             background: { r: 0, g: 0, b: 0, alpha: 0 }
@@ -88,7 +93,9 @@ export default async (req: Request, context: Context) => {
         )
         .toBuffer();
 
-      const fillingDimensions = Math.round(IMAGE_SIZE * filling.scale);
+      const fillingDimensions = Math.round(
+        CANVAS_SIZE * IMAGE_FACTOR * filling.scale
+      );
       const fillingOffset = (CANVAS_SIZE - fillingDimensions) / 2;
 
       return {
@@ -101,7 +108,7 @@ export default async (req: Request, context: Context) => {
     for (const layer of await Promise.all(jobs)) {
       layers.push({ ...layer, top: currentY });
 
-      currentY += SPACING;
+      currentY += CANVAS_SIZE * SPACING_FACTOR;
     }
 
     // Process bottom bread last
@@ -174,5 +181,5 @@ export default async (req: Request, context: Context) => {
 
 export const config: Config = {
   method: "GET",
-  path: "/sandwich-preview/:bread/:fillings"
+  path: "/sandwich-preview/:bread/*"
 };
