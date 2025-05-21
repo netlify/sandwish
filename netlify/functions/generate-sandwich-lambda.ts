@@ -14,7 +14,7 @@ export const handler: Handler = async (event, context) => {
   try {
     const parts = event.path.split("/");
     const bread = parts[4];
-    const fillingIds = parts[5].split(",");
+    const fillingIds = parts.slice(5);
 
     // Find bread and filling ingredients
     const breadIngredient = breads.find((b) => b.id === bread);
@@ -27,7 +27,8 @@ export const handler: Handler = async (event, context) => {
 
     const fillingIngredients = fillingIds
       .slice(0, MAX_INGREDIENTS_IN_PREVIEW)
-      .map((id) => {
+      .map((idAndExtension) => {
+        const [id] = idAndExtension.split(".");
         const ingredient = fillings.find((f) => f.id === id);
         if (!ingredient) {
           throw new Error(`Invalid filling ID: ${id}`);
@@ -112,7 +113,6 @@ export const handler: Handler = async (event, context) => {
       typeof breadIngredient.filename === "string"
         ? breadIngredient.filename
         : breadIngredient.filename.bottom;
-    console.log("-->", new URL(`/bread/${bottomFilename}`, event.rawUrl));
     const bottomResponse = await fetch(
       new URL(`/bread/${bottomFilename}`, event.rawUrl)
     );

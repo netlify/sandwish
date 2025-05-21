@@ -248,12 +248,12 @@ class SandwichBuilder {
         .slice(0, MAX_INGREDIENTS_IN_PREVIEW)
         .map((layer) => this.fillingIngredients[layer.index].id)
         .reverse()
-        .join(",");
+        .join("/");
 
       // Update image URL
       const baseUrl = window.location.origin;
       // const imageUrl = `${baseUrl}/sandwich-preview/${bread}/${fillings}`;
-      const imageUrl = `${baseUrl}/.netlify/functions/generate-sandwich-lambda/${bread}/${fillings}`;
+      const imageUrl = `${baseUrl}/.netlify/functions/generate-sandwich-lambda/${bread}/${fillings}.png`;
       imageMeta.setAttribute("content", imageUrl);
     }
   }
