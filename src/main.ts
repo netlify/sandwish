@@ -215,8 +215,12 @@ class SandwichBuilder {
     // Update OpenGraph tags
     const titleMeta = document.querySelector('meta[property="og:title"]');
     const imageMeta = document.querySelector('meta[property="og:image"]');
-    const descriptionMeta = document.querySelector('meta[property="og:description"]');
-    const twitterDescriptionMeta = document.querySelector('meta[property="twitter:description"]');
+    const descriptionMeta = document.querySelector(
+      'meta[property="og:description"]'
+    );
+    const twitterDescriptionMeta = document.querySelector(
+      'meta[property="twitter:description"]'
+    );
 
     if (titleMeta) {
       titleMeta.setAttribute(
@@ -226,12 +230,14 @@ class SandwichBuilder {
     }
 
     // Update description with author
-    const description = `A truly delicious creation by ${this.authorDisplay.textContent || 'Anonymous'}`;
+    const description = `A truly delicious creation by ${
+      this.authorDisplay.textContent || "someone"
+    }`;
     if (descriptionMeta) {
-      descriptionMeta.setAttribute('content', description);
+      descriptionMeta.setAttribute("content", description);
     }
     if (twitterDescriptionMeta) {
-      twitterDescriptionMeta.setAttribute('content', description);
+      twitterDescriptionMeta.setAttribute("content", description);
     }
 
     if (imageMeta) {
@@ -246,7 +252,8 @@ class SandwichBuilder {
 
       // Update image URL
       const baseUrl = window.location.origin;
-      const imageUrl = `${baseUrl}/sandwich-preview/${bread}/${fillings}`;
+      // const imageUrl = `${baseUrl}/sandwich-preview/${bread}/${fillings}`;
+      const imageUrl = `${baseUrl}/.netlify/functions/generate-sandwich-lambda/${bread}/${fillings}`;
       imageMeta.setAttribute("content", imageUrl);
     }
   }
