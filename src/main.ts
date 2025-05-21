@@ -251,7 +251,8 @@ class SandwichBuilder {
 
     // Create image URL
     const baseUrl = window.location.origin;
-    const imageUrl = `${baseUrl}/sandwich-preview/${bread}/${fillings}.png`;
+    // const imageUrl = `${baseUrl}/sandwich-preview/${bread}/${fillings}.png`;
+    const imageUrl = `${baseUrl}/.netlify/functions/generate-sandwich-lambda/${bread}/${fillings}.png`;
 
     // Update OpenGraph image
     if (imageMeta) {
@@ -259,7 +260,9 @@ class SandwichBuilder {
     }
 
     // Update Twitter image
-    const twitterImageMeta = document.querySelector('meta[property="twitter:image"]');
+    const twitterImageMeta = document.querySelector(
+      'meta[property="twitter:image"]'
+    );
     if (twitterImageMeta) {
       twitterImageMeta.setAttribute("content", imageUrl);
     }
