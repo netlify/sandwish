@@ -9,7 +9,7 @@
     "preview": "vite preview"
   },
   "devDependencies": {
-    "@netlify/vite-plugin": "^0.2.5",
+    "@netlify/vite-plugin": "^2.0.0",
     "@types/three": "^0.176.0",
     "typescript": "~5.8.3",
     "vite": "^6.3.5"
