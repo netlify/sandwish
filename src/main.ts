@@ -96,17 +96,6 @@ class SandwichBuilder {
       this.updateSandwich();
     });
 
-    const resetButton = document.querySelector(
-      ".reset-button"
-    ) as HTMLButtonElement;
-    resetButton.addEventListener("click", () => {
-      // Keep only the bread layers
-      this.fillingLayers = this.fillingLayers.filter(
-        (layer) => layer.type === "bread"
-      );
-      this.updateSandwich();
-    });
-
     this.editButton.addEventListener("click", () => {
       const isEditMode = this.toggleEditMode();
 

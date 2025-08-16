@@ -492,14 +492,12 @@ body.edit-mode .floating-buttons button {
   box-shadow: var(--shadow-main);
 }
 
-.floating-buttons.right .add-layer,
-.floating-buttons.right .reset-button {
+.floating-buttons.right .add-layer {
   opacity: 0;
   pointer-events: none;
 }
 
-body.edit-mode .floating-buttons.right .add-layer,
-body.edit-mode .floating-buttons.right .reset-button {
+body.edit-mode .floating-buttons.right .add-layer {
   opacity: 1;
   pointer-events: all;
   transition: opacity 0.3s ease;
