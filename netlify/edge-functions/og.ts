@@ -92,13 +92,13 @@ export default async (req: Request, context: Context) => {
   return rewriter(await context.next(), {
     description: `A truly delicious creation${author}. Stack yours and share it with the world!`,
     imagePath,
-    title: `Sandwish: ${state.title}`
+    title: state.title
   });
 };
 
 export const config: Config = {
-  // header: {
-  //   "Netlify-Agent-Category": "page-preview"
-  // },
+  header: {
+    "Netlify-Agent-Category": "(crawler|page-preview)"
+  },
   pattern: "^/[^.]*$"
 };
