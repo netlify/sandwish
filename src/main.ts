@@ -80,10 +80,11 @@ class SandwichBuilder {
     this.stateSnapshot = "";
 
     // Add initial bread layers
+    const randomBreadIndex = Math.floor(Math.random() * this.breadIngredients.length);
     this.fillingLayers = isRootPath
       ? [
-          { index: 9, type: "bread" },
-          { index: 9, type: "bread" }
+          { index: randomBreadIndex, type: "bread" },
+          { index: randomBreadIndex, type: "bread" }
         ]
       : [];
 
@@ -224,9 +225,10 @@ class SandwichBuilder {
 
     if (isEditMode) {
       // Reset to fresh sandwich when entering edit mode
+      const randomBreadIndex = Math.floor(Math.random() * this.breadIngredients.length);
       this.fillingLayers = [
-        { index: 9, type: "bread" },
-        { index: 9, type: "bread" }
+        { index: randomBreadIndex, type: "bread" },
+        { index: randomBreadIndex, type: "bread" }
       ];
 
       // Reset title and author
