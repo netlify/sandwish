@@ -18,7 +18,7 @@ export default async (req: Request) => {
   const id = uuid().replace(/-/g, "");
   const slug = `${slugify(title)}-${id}`;
 
-  await store.setJSON(slug, payload);
+  await store.setJSON(slug, payload, { onlyIfNew: true });
 
   return Response.json({ ...payload, slug } as State);
 };
