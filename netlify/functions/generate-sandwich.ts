@@ -39,8 +39,9 @@ export default async (req: Request) => {
     const layers: sharp.OverlayOptions[] = [];
 
     // Calculate dimensions and offsets
-    const breadDimensions = Math.round(
-      CANVAS_SIZE * IMAGE_FACTOR * breadIngredient.scale
+    const breadDimensions = Math.max(
+      Math.round(CANVAS_SIZE * IMAGE_FACTOR * breadIngredient.scale),
+      1
     );
     const breadOffset = (CANVAS_SIZE - breadDimensions) / 2;
 
