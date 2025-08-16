@@ -538,6 +538,45 @@ class SandwichBuilder {
 window.addEventListener("load", async () => {
   new SandwichBuilder(window.location.pathname);
 
+  // Loading screen text rotation
+  const loadingMessages = [
+    "Sourcing the ingredients",
+    "Stacking the layers",
+    "Plating",
+    "Adding the final touches"
+  ];
+  
+  const loadingTextElement = document.getElementById("loading-text");
+  if (loadingTextElement) {
+    let currentMessageIndex = 0;
+    
+    const rotateMessage = () => {
+      currentMessageIndex = (currentMessageIndex + 1) % loadingMessages.length;
+      loadingTextElement.textContent = loadingMessages[currentMessageIndex];
+    };
+    
+    // Start rotating messages every 2 seconds
+    const messageInterval = setInterval(rotateMessage, 2000);
+    
+    // Stop rotation when loading screen is hidden
+    const loadingScreen = document.getElementById("loading-screen");
+    if (loadingScreen) {
+      const observer = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+          if (mutation.attributeName === "class") {
+            const target = mutation.target as HTMLElement;
+            if (target.classList.contains("hidden")) {
+              clearInterval(messageInterval);
+              observer.disconnect();
+            }
+          }
+        });
+      });
+      
+      observer.observe(loadingScreen, { attributes: true });
+    }
+  }
+
   // Help tooltip functionality
   const helpButton = document.querySelector(
     ".help-button"
