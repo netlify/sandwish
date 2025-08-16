@@ -396,9 +396,9 @@ body.edit-mode .floating-buttons button {
 
 .help-button {
   font-family: "Lilita One", cursive;
-  font-size: 1.5rem;
-  width: 3rem;
-  height: 3rem;
+  font-size: 1.8rem;
+  width: calc(1.8rem + 1rem + 8px);
+  height: calc(1.8rem + 1rem + 8px);
   border-radius: 50%;
   padding: 0;
   display: flex;
@@ -420,6 +420,7 @@ body.edit-mode .floating-buttons button {
   transform: scale(0.9);
   pointer-events: none;
   transition: opacity 0.3s ease, transform 0.3s ease;
+  border: 4px solid black;
 }
 
 .help-tooltip .title-display {
@@ -434,7 +435,7 @@ body.edit-mode .floating-buttons button {
   left: 15px;
   border-width: 10px 10px 0;
   border-style: solid;
-  border-color: var(--color-background) transparent transparent transparent;
+  border-color: black transparent transparent transparent;
 }
 
 @media (max-width: 900px) {
