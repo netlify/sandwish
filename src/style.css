@@ -526,7 +526,20 @@ body.edit-mode .floating-buttons.right .add-layer {
 
 .expand-button img {
   height: 2.2rem;
-  filter: brightness(0) invert(1);
+  filter: brightness(0) invert(1) drop-shadow(2px 2px 0 #000);
+  position: absolute;
+}
+
+.expand-button .collapse-icon {
+  display: none;
+}
+
+body.expanded .expand-button .expand-icon {
+  display: none;
+}
+
+body.expanded .expand-button .collapse-icon {
+  display: block;
 }
 
 body.edit-mode .expand-button {
