@@ -106,6 +106,20 @@ class SandwichBuilder {
       }
     });
 
+    // Add expand/collapse button functionality
+    const expandButton = document.querySelector(".expand-button") as HTMLButtonElement;
+    if (expandButton) {
+      expandButton.addEventListener("click", () => {
+        const isExpanded = document.body.classList.toggle("expanded");
+        const img = expandButton.querySelector("img") as HTMLImageElement;
+        if (img) {
+          img.src = isExpanded ? "/icon-collapse.svg" : "/icon-expand.svg";
+          img.alt = isExpanded ? "Collapse" : "Expand";
+        }
+        expandButton.setAttribute("aria-label", isExpanded ? "Collapse layers" : "Expand layers");
+      });
+    }
+
     // Track when title input is modified by user
     this.titleEdit.addEventListener("input", () => {
       this.titleHasBeenModified = true;

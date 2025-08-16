@@ -282,7 +282,8 @@ body.edit-mode .sandwich-builder {
   bottom: 0;
 }
 
-body.edit-mode .layer-wrapper {
+body.edit-mode .layer-wrapper,
+body.expanded .layer-wrapper {
   height: 200px;
 }
 
@@ -501,6 +502,36 @@ body.edit-mode .floating-buttons.right .add-layer {
   opacity: 1;
   pointer-events: all;
   transition: opacity 0.3s ease;
+}
+
+.button-row {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.expand-button {
+  font-family: "Lilita One", cursive;
+  font-size: 1.8rem;
+  width: calc(1.8rem + 1rem + 8px);
+  height: calc(1.8rem + 1rem + 8px);
+  border-radius: 50%;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+  pointer-events: all;
+}
+
+.expand-button img {
+  height: 2.2rem;
+  filter: brightness(0) invert(1);
+}
+
+body.edit-mode .expand-button {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .edit-button,
