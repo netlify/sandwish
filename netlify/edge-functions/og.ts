@@ -71,6 +71,7 @@ function rewriter(response: Response, data: PageData): Response {
 import type { State } from "../../src/types.js";
 
 export default async (req: Request, context: Context) => {
+  console.log("-> EF", req.url, req.headers.get("Netlify-Agent-Category"));
   const url = new URL(req.url);
   const slug = url.pathname.slice(1);
   if (!slug) {

@@ -82,15 +82,16 @@ export default async (req: Request) => {
       const fillingResponse = await fetch(
         `${baseUrl}/filling/${filling.filename}`
       );
+
+      const size = Math.max(
+        Math.round(CANVAS_SIZE * IMAGE_FACTOR * filling.scale),
+        1
+      );
       const fillingBuffer = await sharp(await fillingResponse.arrayBuffer())
-        .resize(
-          Math.round(CANVAS_SIZE * IMAGE_FACTOR * filling.scale),
-          Math.round(CANVAS_SIZE * IMAGE_FACTOR * filling.scale),
-          {
-            fit: "contain",
-            background: { r: 0, g: 0, b: 0, alpha: 0 }
-          }
-        )
+        .resize(size, size, {
+          fit: "contain",
+          background: { r: 0, g: 0, b: 0, alpha: 0 }
+        })
         .toBuffer();
 
       const fillingDimensions = Math.round(
