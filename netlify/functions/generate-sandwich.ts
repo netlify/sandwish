@@ -10,7 +10,7 @@ const CANVAS_SIZE = 600;
 const IMAGE_FACTOR = 0.98;
 const SPACING_FACTOR = 0.06;
 
-export default async (req: Request, context: Context) => {
+export default async (req: Request) => {
   try {
     const url = new URL(req.url);
     const parts = url.pathname.split("/");

@@ -86,11 +86,12 @@ export default async (req: Request, context: Context) => {
   const imagePath = `/sandwich-preview/${state.bread}/${state.fillings
     .reverse()
     .join("/")}.png`;
+  const author = state.author ? ` by ${state.author}` : "";
 
   return rewriter(await context.next(), {
-    description: `A truly delicious creation by ${state.author}`,
+    description: `A truly delicious creation${author}. Stack yours and share it with the world!`,
     imagePath,
-    title: state.title
+    title: `Sandwish: ${state.title}`
   });
 };
 
