@@ -4,11 +4,7 @@ import type { Config, Context } from "@netlify/edge-functions";
 import {
   HTMLRewriter,
   init,
-  Element,
-  Comment,
-  TextChunk,
-  Doctype,
-  DocumentEnd
+  Element
 } from "https://deno.land/x/htmlrewriter/src/index.ts";
 
 await init();
@@ -99,8 +95,8 @@ export default async (req: Request, context: Context) => {
 };
 
 export const config: Config = {
-  // header: {
-  //   "Netlify-Agent-Category": "page-preview"
-  // },
+  header: {
+    "Netlify-Agent-Category": "page-preview"
+  },
   pattern: "^/[^.]*$"
 };
