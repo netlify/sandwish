@@ -6,7 +6,7 @@ import type { State } from "../../src/types.js";
 const PLACEHOLDER = /\/favicon.png\?role=placeholder/gi;
 
 export default async (req: Request, context: Context) => {
-  console.log("-> EF", req.url, req.headers.get("Netlify-Agent-Category"));
+  console.log("-> EF req", req.url, req.headers.get("Netlify-Agent-Category"));
   const url = new URL(req.url);
   const slug = url.pathname.slice(1);
   if (!slug) {
