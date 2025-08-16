@@ -80,7 +80,9 @@ class SandwichBuilder {
     this.stateSnapshot = "";
 
     // Add initial bread layers
-    const randomBreadIndex = Math.floor(Math.random() * this.breadIngredients.length);
+    const randomBreadIndex = Math.floor(
+      Math.random() * this.breadIngredients.length
+    );
     this.fillingLayers = isRootPath
       ? [
           { index: randomBreadIndex, type: "bread" },
@@ -214,7 +216,9 @@ class SandwichBuilder {
 
     if (isEditMode) {
       // Reset to fresh sandwich when entering edit mode
-      const randomBreadIndex = Math.floor(Math.random() * this.breadIngredients.length);
+      const randomBreadIndex = Math.floor(
+        Math.random() * this.breadIngredients.length
+      );
       this.fillingLayers = [
         { index: randomBreadIndex, type: "bread" },
         { index: randomBreadIndex, type: "bread" }
@@ -223,7 +227,7 @@ class SandwichBuilder {
       // Reset title and author
       this.titleDisplay.textContent = "The Full Stacker";
       this.titleEdit.value = "The Full Stacker";
-      this.authorDisplay.textContent = "Someone";
+      this.authorDisplay.textContent = "Anonymous Chef";
       this.authorEdit.value = "";
 
       // Reset title modification tracking
@@ -329,7 +333,7 @@ class SandwichBuilder {
   public setState(state: State): void {
     this.titleDisplay.textContent = state.title;
     this.titleEdit.value = state.title;
-    this.authorDisplay.textContent = state.author || "Someone";
+    this.authorDisplay.textContent = state.author || "Anonymous Chef";
     this.authorEdit.value = state.author || "";
 
     // Mark title as modified since it's loaded from a saved state
