@@ -398,9 +398,6 @@ class SandwichBuilder {
     this.previewElement.innerHTML = "";
     this.ingredientsList.innerHTML = "";
 
-    const quantities: Record<string, number> = {};
-    const ingredientNames = new Set<string>();
-
     // Create and position ingredient images
     this.fillingLayers.forEach((layer, index) => {
       const ingredients =
@@ -499,19 +496,9 @@ class SandwichBuilder {
       wrapper.appendChild(select);
       this.previewElement.appendChild(wrapper);
 
-      if (index !== 0 && !ingredientNames.has(ingredient.name)) {
-        quantities[ingredient.name] = (quantities[ingredient.name] ?? 0) + 1;
-      }
+      // Add all ingredients to list in order
+      this.addIngredientToList(ingredient.name);
     });
-
-    Object.keys(quantities)
-      .sort()
-      .forEach((name) => {
-        const text =
-          quantities[name] > 1 ? `${quantities[name]}x ${name}` : name;
-
-        this.addIngredientToList(text);
-      });
   }
 }
 
