@@ -190,6 +190,11 @@ class SandwichBuilder {
 
         // Update URL
         window.history.pushState({}, "", `/${state.slug}`);
+
+        // Show share tooltip
+        if ((window as any).showShareTooltip) {
+          (window as any).showShareTooltip();
+        }
       }
     } catch (error) {
       console.error("Failed to save state:", error);
@@ -516,26 +521,118 @@ window.addEventListener("load", async () => {
     }
   }
 
+  // Tooltip management system
+  function createTooltipController(
+    buttonSelector: string,
+    tooltipSelector: string,
+    buttonToggleText?: { active: string; inactive: string }
+  ) {
+    const button = document.querySelector(buttonSelector) as HTMLButtonElement;
+    const tooltip = document.querySelector(tooltipSelector) as HTMLDivElement;
+
+    if (!button || !tooltip) return null;
+
+    let isActive = false;
+
+    const show = () => {
+      // Hide other tooltips first
+      document
+        .querySelectorAll(".help-tooltip, .share-tooltip")
+        .forEach((el) => {
+          if (el !== tooltip) el.classList.remove("active");
+        });
+
+      tooltip.classList.add("active");
+      isActive = true;
+      if (buttonToggleText) {
+        button.textContent = buttonToggleText.active;
+      }
+    };
+
+    const hide = () => {
+      tooltip.classList.remove("active");
+      isActive = false;
+      if (buttonToggleText) {
+        button.textContent = buttonToggleText.inactive;
+      }
+    };
+
+    const toggle = () => {
+      if (isActive) {
+        hide();
+      } else {
+        show();
+      }
+    };
+
+    // Button click handler
+    button.addEventListener("click", (event) => {
+      event.stopPropagation();
+      toggle();
+    });
+
+    // Prevent tooltip from closing when clicked
+    tooltip.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+
+    // Global click handler to close tooltip
+    const globalClickHandler = () => hide();
+    document.addEventListener("click", globalClickHandler);
+
+    return { show, hide, toggle, isActive: () => isActive };
+  }
+
   // Help tooltip functionality
+  createTooltipController(".help-button", ".help-tooltip", {
+    active: "×",
+    inactive: "?"
+  });
+
+  // Share tooltip functionality (no button control, only programmatic)
+  const shareTooltip = document.querySelector(
+    ".share-tooltip"
+  ) as HTMLDivElement;
   const helpButton = document.querySelector(
     ".help-button"
   ) as HTMLButtonElement;
-  const helpTooltip = document.querySelector(".help-tooltip") as HTMLDivElement;
 
-  helpButton.addEventListener("click", (event) => {
-    event.stopPropagation();
-    helpTooltip.classList.toggle("active");
-    helpButton.textContent = helpTooltip.classList.contains("active")
-      ? "×"
-      : "?";
-  });
+  if (shareTooltip && helpButton) {
+    // Prevent share tooltip from closing when clicked
+    shareTooltip.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
 
-  helpTooltip.addEventListener("click", (event) => {
-    event.stopPropagation();
-  });
+    const hideShareTooltip = () => {
+      shareTooltip.classList.remove("active");
+      // Reset help button to inactive state if no other tooltips are active
+      if (!document.querySelector(".help-tooltip.active")) {
+        helpButton.textContent = "?";
+      }
+    };
 
-  document.addEventListener("click", () => {
-    helpTooltip.classList.remove("active");
-    helpButton.textContent = "?";
-  });
+    // Make share tooltip controller globally accessible
+    (window as any).showShareTooltip = () => {
+      // Hide other tooltips first
+      document
+        .querySelectorAll(".help-tooltip, .share-tooltip")
+        .forEach((el) => {
+          if (el !== shareTooltip) el.classList.remove("active");
+        });
+
+      shareTooltip.classList.add("active");
+      // Set help button to close state
+      helpButton.textContent = "×";
+
+      // Auto-hide after 10 seconds
+      setTimeout(() => {
+        hideShareTooltip();
+      }, 10_000);
+    };
+
+    // Global click handler to close share tooltip
+    document.addEventListener("click", () => {
+      hideShareTooltip();
+    });
+  }
 });
