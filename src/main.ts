@@ -521,7 +521,7 @@ class SandwichBuilder {
 
       img.src = `/${layer.type}/${filename}`;
       img.alt = ingredient.name;
-      img.style.width = `${(ingredient.scale || 1) * 600}px`;
+      img.style.width = "600px";
       img.style.height = "auto";
 
       wrapper.appendChild(img);
