@@ -14,6 +14,7 @@ class SandwichBuilder {
   private authorDisplay: HTMLElement;
   private authorEdit: HTMLInputElement;
   private stateSnapshot: string;
+  private titleHasBeenModified: boolean = false;
 
   private breadIngredients: Ingredient[] = breads.sort(function (a, b) {
     if (a.name < b.name) {
@@ -112,6 +113,11 @@ class SandwichBuilder {
       if (!isEditMode) {
         this.save();
       }
+    });
+
+    // Track when title input is modified by user
+    this.titleEdit.addEventListener("input", () => {
+      this.titleHasBeenModified = true;
     });
 
     this.updateSandwich();
@@ -274,9 +280,28 @@ class SandwichBuilder {
     const isEditMode = document.body.classList.toggle("edit-mode");
     const isMobile = window.innerWidth <= 900;
 
-    this.editButton.textContent = isEditMode ? "Save" : "Edit";
+    this.editButton.textContent = isEditMode ? "Save" : "New";
 
     if (isEditMode) {
+      // Reset to fresh sandwich when entering edit mode
+      this.fillingLayers = [
+        { index: 9, type: "bread" },
+        { index: 9, type: "bread" }
+      ];
+      
+      // Reset title and author
+      this.titleDisplay.textContent = "The Full Stacker";
+      this.titleEdit.value = "The Full Stacker";
+      this.authorDisplay.textContent = "Someone";
+      this.authorEdit.value = "";
+      
+      // Reset title modification tracking
+      this.titleHasBeenModified = false;
+      
+      // Change URL to root path
+      window.history.pushState({}, "", "/");
+      
+      this.updateSandwich();
       this.stateSnapshot = JSON.stringify(this.serializeState());
     } else {
       if (isMobile) {
@@ -286,6 +311,15 @@ class SandwichBuilder {
         this.titleEdit.value = (title || "").trim();
         this.authorEdit.value = (author || "").trim();
       } else {
+        // Check if title has never been modified and prompt for a name
+        if (!this.titleHasBeenModified) {
+          const title = window.prompt("What is the name of your creation?");
+          if (title && title.trim()) {
+            this.titleEdit.value = title.trim();
+            this.titleHasBeenModified = true;
+          }
+        }
+        
         if (!this.authorEdit.value.trim()) {
           this.authorEdit.value = (prompt("What is your name?") || "").trim();
         }
@@ -366,6 +400,9 @@ class SandwichBuilder {
     this.titleEdit.value = state.title;
     this.authorDisplay.textContent = state.author || "Someone";
     this.authorEdit.value = state.author || "";
+    
+    // Mark title as modified since it's loaded from a saved state
+    this.titleHasBeenModified = true;
 
     this.fillingLayers = [];
 
