@@ -254,6 +254,8 @@ class SandwichBuilder {
     // const imageUrl = `${baseUrl}/sandwich-preview/${bread}/${fillings}.png`;
     const imageUrl = `${baseUrl}/.netlify/functions/generate-sandwich-lambda/${bread}/${fillings}.png`;
 
+    console.log({ baseUrl, imageUrl });
+
     // Update OpenGraph image
     if (imageMeta) {
       imageMeta.setAttribute("content", imageUrl);
