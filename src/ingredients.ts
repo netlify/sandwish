@@ -303,7 +303,7 @@ export const fillings: Ingredient[] = [
     id: "cheese-cream",
     name: "Cheese (Cream)",
     filename: "cheese-cream.png",
-    scale: 0
+    scale: 0.7433
   },
   {
     id: "cheese-mozzarella",
@@ -501,7 +501,7 @@ export const fillings: Ingredient[] = [
     id: "patty-beef",
     name: "Patty (Beef)",
     filename: "patty-beef.png",
-    scale: 0
+    scale: 0.73
   },
   {
     id: "pork-chop",

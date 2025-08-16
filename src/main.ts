@@ -191,11 +191,6 @@ class SandwichBuilder {
 
         // Update URL
         window.history.pushState({}, "", `/${state.slug}`);
-
-        window.prompt(
-          "Yummy! Use this unique link to share your creation with the world:",
-          document.URL
-        );
       }
     } catch (error) {
       console.error("Failed to save state:", error);
