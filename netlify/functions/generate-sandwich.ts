@@ -7,7 +7,7 @@ import {
 } from "../../src/ingredients";
 
 const CANVAS_SIZE = 600;
-const IMAGE_FACTOR = 0.98;
+const IMAGE_FACTOR = 0.9;
 const SPACING_FACTOR = 0.06;
 
 export default async (req: Request) => {
@@ -39,10 +39,7 @@ export default async (req: Request) => {
     const layers: sharp.OverlayOptions[] = [];
 
     // Calculate dimensions and offsets
-    const breadDimensions = Math.max(
-      Math.round(CANVAS_SIZE * IMAGE_FACTOR * breadIngredient.scale),
-      1
-    );
+    const breadDimensions = Math.round(CANVAS_SIZE * IMAGE_FACTOR);
     const breadOffset = (CANVAS_SIZE - breadDimensions) / 2;
 
     const totalHeight =
@@ -84,10 +81,7 @@ export default async (req: Request) => {
         `${baseUrl}/filling/${filling.filename}`
       );
 
-      const size = Math.max(
-        Math.round(CANVAS_SIZE * IMAGE_FACTOR * filling.scale),
-        1
-      );
+      const size = Math.round(CANVAS_SIZE * IMAGE_FACTOR);
       const fillingBuffer = await sharp(await fillingResponse.arrayBuffer())
         .resize(size, size, {
           fit: "contain",
@@ -95,9 +89,7 @@ export default async (req: Request) => {
         })
         .toBuffer();
 
-      const fillingDimensions = Math.round(
-        CANVAS_SIZE * IMAGE_FACTOR * filling.scale
-      );
+      const fillingDimensions = Math.round(CANVAS_SIZE * IMAGE_FACTOR);
       const fillingOffset = (CANVAS_SIZE - fillingDimensions) / 2;
 
       return {

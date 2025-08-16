@@ -91,6 +91,7 @@ header {
   border-radius: 2rem;
   position: relative;
   box-shadow: var(--shadow-main);
+  z-index: 10001;
 }
 
 header::before {

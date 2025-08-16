@@ -2,7 +2,6 @@ import "./style.css";
 import {
   breads,
   fillings,
-  MAX_INGREDIENTS_IN_PREVIEW,
   type Ingredient,
   type IngredientType
 } from "./ingredients.js";
@@ -212,65 +211,6 @@ class SandwichBuilder {
     } catch {}
   }
 
-  private updateMeta() {
-    // Update OpenGraph tags
-    const titleMeta = document.querySelector('meta[property="og:title"]');
-    const imageMeta = document.querySelector('meta[property="og:image"]');
-    const descriptionMeta = document.querySelector(
-      'meta[property="og:description"]'
-    );
-    const twitterDescriptionMeta = document.querySelector(
-      'meta[property="twitter:description"]'
-    );
-
-    if (titleMeta) {
-      titleMeta.setAttribute(
-        "content",
-        this.titleDisplay.textContent || "A Sandwish"
-      );
-    }
-
-    // Update description with author
-    const description = `A truly delicious creation by ${
-      this.authorDisplay.textContent || "someone"
-    }`;
-    if (descriptionMeta) {
-      descriptionMeta.setAttribute("content", description);
-    }
-    if (twitterDescriptionMeta) {
-      twitterDescriptionMeta.setAttribute("content", description);
-    }
-
-    // Get bread and filling IDs for image URL
-    const bread = this.breadIngredients[this.fillingLayers[0].index].id;
-    const fillings = [...this.fillingLayers]
-      .filter((layer) => layer.type === "filling")
-      .slice(0, MAX_INGREDIENTS_IN_PREVIEW)
-      .map((layer) => this.fillingIngredients[layer.index].id)
-      .reverse()
-      .join("/");
-
-    // Create image URL
-    const baseUrl = window.location.origin;
-    // const imageUrl = `${baseUrl}/sandwich-preview/${bread}/${fillings}.png`;
-    const imageUrl = `${baseUrl}/.netlify/functions/generate-sandwich-lambda/${bread}/${fillings}.png`;
-
-    console.log({ baseUrl, imageUrl });
-
-    // Update OpenGraph image
-    if (imageMeta) {
-      imageMeta.setAttribute("content", imageUrl);
-    }
-
-    // Update Twitter image
-    const twitterImageMeta = document.querySelector(
-      'meta[property="twitter:image"]'
-    );
-    if (twitterImageMeta) {
-      twitterImageMeta.setAttribute("content", imageUrl);
-    }
-  }
-
   public toggleEditMode(): boolean {
     const isEditMode = document.body.classList.toggle("edit-mode");
     const isMobile = window.innerWidth <= 900;
@@ -283,19 +223,19 @@ class SandwichBuilder {
         { index: 9, type: "bread" },
         { index: 9, type: "bread" }
       ];
-      
+
       // Reset title and author
       this.titleDisplay.textContent = "The Full Stacker";
       this.titleEdit.value = "The Full Stacker";
       this.authorDisplay.textContent = "Someone";
       this.authorEdit.value = "";
-      
+
       // Reset title modification tracking
       this.titleHasBeenModified = false;
-      
+
       // Change URL to root path
       window.history.pushState({}, "", "/");
-      
+
       this.updateSandwich();
       this.stateSnapshot = JSON.stringify(this.serializeState());
     } else {
@@ -314,7 +254,7 @@ class SandwichBuilder {
             this.titleHasBeenModified = true;
           }
         }
-        
+
         if (!this.authorEdit.value.trim()) {
           this.authorEdit.value = (prompt("What is your name?") || "").trim();
         }
@@ -395,7 +335,7 @@ class SandwichBuilder {
     this.titleEdit.value = state.title;
     this.authorDisplay.textContent = state.author || "Someone";
     this.authorEdit.value = state.author || "";
-    
+
     // Mark title as modified since it's loaded from a saved state
     this.titleHasBeenModified = true;
 
@@ -422,7 +362,6 @@ class SandwichBuilder {
 
     this.fillingLayers.push({ index: breadIndex, type: "bread" });
 
-    this.updateMeta();
     this.updateSandwich();
   }
 
@@ -545,19 +484,19 @@ window.addEventListener("load", async () => {
     "Plating",
     "Adding the final touches"
   ];
-  
+
   const loadingTextElement = document.getElementById("loading-text");
   if (loadingTextElement) {
     let currentMessageIndex = 0;
-    
+
     const rotateMessage = () => {
       currentMessageIndex = (currentMessageIndex + 1) % loadingMessages.length;
       loadingTextElement.textContent = loadingMessages[currentMessageIndex];
     };
-    
+
     // Start rotating messages every 2 seconds
     const messageInterval = setInterval(rotateMessage, 2000);
-    
+
     // Stop rotation when loading screen is hidden
     const loadingScreen = document.getElementById("loading-screen");
     if (loadingScreen) {
@@ -572,7 +511,7 @@ window.addEventListener("load", async () => {
           }
         });
       });
-      
+
       observer.observe(loadingScreen, { attributes: true });
     }
   }
