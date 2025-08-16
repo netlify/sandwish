@@ -30,5 +30,8 @@ export default async (req: Request, context: Context) => {
 };
 
 export const config: Config = {
-  pattern: "^[^.]*$"
+  header: {
+    "Netlify-Agent-Category": "(?!browser$).*"
+  },
+  pattern: "^/[^.]*$"
 };
