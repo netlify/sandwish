@@ -201,7 +201,9 @@ class SandwichBuilder {
         window.history.pushState({}, "", `/${state.slug}`);
 
         // Start pulsing the share button
-        const shareButton = document.querySelector(".share-button") as HTMLButtonElement;
+        const shareButton = document.querySelector(
+          ".share-button"
+        ) as HTMLButtonElement;
         if (shareButton) {
           shareButton.classList.add("pulsing");
         }
@@ -237,8 +239,8 @@ class SandwichBuilder {
       ];
 
       // Reset title and author
-      this.titleDisplay.textContent = "The Full Stacker";
-      this.titleEdit.value = "The Full Stacker";
+      this.titleDisplay.textContent = "The Sandwish";
+      this.titleEdit.value = "The Sandwish";
       this.authorDisplay.textContent = "Anonymous Chef";
       this.authorEdit.value = "";
 
@@ -658,7 +660,7 @@ window.addEventListener("load", async () => {
     // Button click handler
     shareButton.addEventListener("click", async (event) => {
       event.stopPropagation();
-      
+
       // Remove pulsing state when clicked
       shareButton.classList.remove("pulsing");
 
