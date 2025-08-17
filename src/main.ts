@@ -11,6 +11,21 @@ function isMobile() {
   return window.innerWidth <= 900;
 }
 
+function generateShareData() {
+  const titleElement = document.querySelector(".title-display") as HTMLElement;
+  const sandwichTitle = titleElement?.textContent || "My Sandwich";
+  
+  const ingredientsList = document.querySelectorAll("#ingredients-list li");
+  const totalIngredients = ingredientsList.length;
+  const fillingCount = Math.max(0, totalIngredients - 2);
+  
+  return {
+    title: sandwichTitle,
+    url: window.location.href,
+    text: `🧑‍🍳 I have turned ${fillingCount} incredible ingredients into a true culinary masterpiece I called "${sandwichTitle}".\n\n🥪 Come check it out and build your own.\n\n🔗 ${window.location.href}`
+  };
+}
+
 class SandwichBuilder {
   private titleDisplay: HTMLHeadingElement;
   private titleEdit: HTMLInputElement;
@@ -168,20 +183,6 @@ class SandwichBuilder {
     this.titleHasBeenModified = false;
   }
 
-  private generateShareData() {
-    const titleElement = this.titleDisplay;
-    const sandwichTitle = titleElement?.textContent || "My Sandwich";
-    
-    const ingredientsList = document.querySelectorAll("#ingredients-list li");
-    const totalIngredients = ingredientsList.length;
-    const fillingCount = Math.max(0, totalIngredients - 2);
-    
-    return {
-      title: sandwichTitle,
-      url: window.location.href,
-      text: `🧑‍🍳 I have turned ${fillingCount} incredible ingredients into a true culinary masterpiece I called "${sandwichTitle}".\n\n🥪 Come check it out and build your own.\n\n🔗 ${window.location.href}`
-    };
-  }
 
   private serializeState() {
     const bread = this.breadIngredients[this.fillingLayers[0].index].id;
@@ -677,7 +678,7 @@ window.addEventListener("load", async () => {
       shareButton.classList.remove("pulsing");
 
       // Get share data
-      const shareData = this.generateShareData();
+      const shareData = generateShareData();
 
       if (isMobile()) {
         try {
