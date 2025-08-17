@@ -90,7 +90,7 @@ export default async (req: Request, context: Context) => {
     return;
   }
 
-  const imagePath = `/sandwich-preview/${state.bread}/${state.fillings
+  const imagePath = `/sandwich-preview/${state.bread}/${[...state.fillings]
     .reverse()
     .join("/")}.png`;
   const author = state.author ? ` by ${state.author}` : "";
