@@ -296,6 +296,13 @@ body.expanded .layer-wrapper:not(:first-of-type) {
   height: 300px;
 }
 
+@media screen and (max-width: 900px) {
+  body.edit-mode .layer-wrapper:not(:first-of-type),
+  body.expanded .layer-wrapper:not(:first-of-type) {
+    height: 200px;
+  }
+}
+
 .nav-button {
   background: var(--color-primary);
   color: white;
