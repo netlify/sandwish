@@ -7,7 +7,7 @@ import {
 } from "../../src/ingredients";
 
 const CANVAS_SIZE = 600;
-const IMAGE_FACTOR = 0.9;
+const IMAGE_FACTOR = 0.8;
 const SPACING_FACTOR = 0.06;
 
 export default async (req: Request) => {
