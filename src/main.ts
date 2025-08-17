@@ -147,7 +147,6 @@ class SandwichBuilder {
 
     if (urlPath === "/") {
       this.toggleEditMode();
-      this.setLoadingState(true);
     } else {
       this.loadState();
     }
@@ -201,9 +200,10 @@ class SandwichBuilder {
         // Update URL
         window.history.pushState({}, "", `/${state.slug}`);
 
-        // Show share tooltip
-        if ((window as any).showShareTooltip) {
-          (window as any).showShareTooltip();
+        // Start pulsing the share button
+        const shareButton = document.querySelector(".share-button") as HTMLButtonElement;
+        if (shareButton) {
+          shareButton.classList.add("pulsing");
         }
       }
     } catch (error) {
@@ -217,7 +217,6 @@ class SandwichBuilder {
 
       if (sandwichData) {
         this.setState(sandwichData);
-        this.setLoadingState(true);
       }
     } catch {}
   }
@@ -382,6 +381,17 @@ class SandwichBuilder {
     this.previewElement.innerHTML = "";
     this.ingredientsList.innerHTML = "";
 
+    // Track loading of visible images
+    let totalImages = this.fillingLayers.length; // sandwich ingredient images
+    let loadedImages = 0;
+
+    const onImageLoaded = () => {
+      loadedImages++;
+      if (loadedImages >= totalImages) {
+        this.setLoadingState(true);
+      }
+    };
+
     // Create and position ingredient images
     this.fillingLayers.forEach((layer, index) => {
       const ingredients =
@@ -475,6 +485,10 @@ class SandwichBuilder {
       img.alt = ingredient.name;
       img.style.width = "600px";
       img.style.height = "auto";
+
+      // Track image loading
+      img.addEventListener("load", onImageLoaded);
+      img.addEventListener("error", onImageLoaded); // Count errors as loaded to avoid hanging
 
       wrapper.appendChild(img);
       wrapper.appendChild(select);
@@ -644,6 +658,9 @@ window.addEventListener("load", async () => {
     // Button click handler
     shareButton.addEventListener("click", async (event) => {
       event.stopPropagation();
+      
+      // Remove pulsing state when clicked
+      shareButton.classList.remove("pulsing");
 
       // Get sandwich title and ingredient count
       const titleElement = document.querySelector(
