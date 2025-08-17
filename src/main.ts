@@ -18,6 +18,7 @@ class SandwichBuilder {
   private authorEdit: HTMLInputElement;
   private stateSnapshot: string;
   private titleHasBeenModified: boolean = false;
+  private shareButton: HTMLButtonElement;
 
   private breadIngredients: Ingredient[] = breads.sort(function (a, b) {
     if (a.name < b.name) {
@@ -66,6 +67,9 @@ class SandwichBuilder {
     this.editButton = document.querySelector(
       ".edit-button"
     ) as HTMLButtonElement;
+    this.shareButton = document.querySelector(
+      ".share-button"
+    ) as HTMLButtonElement;
 
     const isRootPath = urlPath === "/";
 
@@ -84,15 +88,7 @@ class SandwichBuilder {
     this.stateSnapshot = "";
 
     // Add initial bread layers
-    const randomBreadIndex = Math.floor(
-      Math.random() * this.breadIngredients.length
-    );
-    this.fillingLayers = isRootPath
-      ? [
-          { index: randomBreadIndex, type: "bread" },
-          { index: randomBreadIndex, type: "bread" }
-        ]
-      : [];
+    this.fillingLayers = isRootPath ? this.createRandomBreadLayers() : [];
 
     // Add buttons
     const addButton = document.querySelector(".add-layer") as HTMLButtonElement;
@@ -156,6 +152,37 @@ class SandwichBuilder {
     this.loadingElement.classList.toggle("hidden", isLoaded);
   }
 
+  private createRandomBreadLayers() {
+    const randomBreadIndex = Math.floor(Math.random() * this.breadIngredients.length);
+    return [
+      { index: randomBreadIndex, type: "bread" as IngredientType },
+      { index: randomBreadIndex, type: "bread" as IngredientType }
+    ];
+  }
+
+  private resetToDefaults() {
+    this.titleDisplay.textContent = "The Sandwish";
+    this.titleEdit.value = "The Sandwish";
+    this.authorDisplay.textContent = "Anonymous Chef";
+    this.authorEdit.value = "";
+    this.titleHasBeenModified = false;
+  }
+
+  private generateShareData() {
+    const titleElement = this.titleDisplay;
+    const sandwichTitle = titleElement?.textContent || "My Sandwich";
+    
+    const ingredientsList = document.querySelectorAll("#ingredients-list li");
+    const totalIngredients = ingredientsList.length;
+    const fillingCount = Math.max(0, totalIngredients - 2);
+    
+    return {
+      title: sandwichTitle,
+      url: window.location.href,
+      text: `🧑‍🍳 I have turned ${fillingCount} incredible ingredients into a true culinary masterpiece I called "${sandwichTitle}".\n\n🥪 Come check it out and build your own.\n\n🔗 ${window.location.href}`
+    };
+  }
+
   private serializeState() {
     const bread = this.breadIngredients[this.fillingLayers[0].index].id;
     const fillings = this.fillingLayers
@@ -201,11 +228,8 @@ class SandwichBuilder {
         window.history.pushState({}, "", `/${state.slug}`);
 
         // Start pulsing the share button
-        const shareButton = document.querySelector(
-          ".share-button"
-        ) as HTMLButtonElement;
-        if (shareButton) {
-          shareButton.classList.add("pulsing");
+        if (this.shareButton) {
+          this.shareButton.classList.add("pulsing");
         }
       }
     } catch (error) {
@@ -230,22 +254,10 @@ class SandwichBuilder {
 
     if (isEditMode) {
       // Reset to fresh sandwich when entering edit mode
-      const randomBreadIndex = Math.floor(
-        Math.random() * this.breadIngredients.length
-      );
-      this.fillingLayers = [
-        { index: randomBreadIndex, type: "bread" },
-        { index: randomBreadIndex, type: "bread" }
-      ];
+      this.fillingLayers = this.createRandomBreadLayers();
 
       // Reset title and author
-      this.titleDisplay.textContent = "The Sandwish";
-      this.titleEdit.value = "The Sandwish";
-      this.authorDisplay.textContent = "Anonymous Chef";
-      this.authorEdit.value = "";
-
-      // Reset title modification tracking
-      this.titleHasBeenModified = false;
+      this.resetToDefaults();
 
       // Change URL to root path
       window.history.pushState({}, "", "/");
@@ -664,22 +676,8 @@ window.addEventListener("load", async () => {
       // Remove pulsing state when clicked
       shareButton.classList.remove("pulsing");
 
-      // Get sandwich title and ingredient count
-      const titleElement = document.querySelector(
-        ".title-display"
-      ) as HTMLElement;
-      const sandwichTitle = titleElement?.textContent || "My Sandwich";
-
-      // Count ingredients (excluding bread)
-      const ingredientsList = document.querySelectorAll("#ingredients-list li");
-      const totalIngredients = ingredientsList.length;
-      const fillingCount = Math.max(0, totalIngredients - 2); // Subtract 2 for top and bottom bread
-
-      const shareData = {
-        title: sandwichTitle,
-        url: window.location.href,
-        text: `🧑‍🍳 I have turned ${fillingCount} incredible ingredients into a true culinary masterpiece I called "${sandwichTitle}".\n\n🥪 Come check it out and build your own.\n\n🔗 ${window.location.href}`
-      };
+      // Get share data
+      const shareData = this.generateShareData();
 
       if (isMobile()) {
         try {
