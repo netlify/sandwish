@@ -663,7 +663,7 @@ window.addEventListener("load", async () => {
       const shareData = {
         title: sandwichTitle,
         url: window.location.href,
-        text: `I have turned ${fillingCount} incredible ingredients into a true culinary masterpiece I called ${sandwichTitle}. Come check it out and build your own`
+        text: `🧑‍🍳 I have turned ${fillingCount} incredible ingredients into a true culinary masterpiece I called "${sandwichTitle}".\n\n🥪 Come check it out and build your own.\n\n🔗 ${window.location.href}`
       };
 
       if (isMobile()) {
@@ -674,7 +674,8 @@ window.addEventListener("load", async () => {
             return;
           }
         } catch {
-          // no-op
+          // User cancelled or share failed, don't show tooltip on mobile
+          return;
         }
       }
 
