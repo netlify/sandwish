@@ -16,7 +16,7 @@ export default async (req: Request) => {
   }
 
   const id = uuid().replace(/-/g, "");
-  const slug = `${slugify(title)}-${id}`;
+  const slug = `${id}-${slugify(title)}`;
 
   await store.setJSON(slug, payload, { onlyIfNew: true });
 
