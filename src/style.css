@@ -258,22 +258,12 @@ main {
   max-width: 1200px;
   margin: 0 auto;
   padding-top: 40vw;
-  padding-top: min(40vw, 400px);
-}
-
-body.edit-mode .sandwich-builder,
-body.expanded .sandwich-builder {
-  padding-top: 20vw;
+  padding-top: min(40vw, 420px);
 }
 
 @media (max-width: 900px) {
   .sandwich-builder {
     padding-top: 48vw;
-  }
-
-  body.edit-mode .sandwich-builder,
-  body.expanded .sandwich-builder {
-    padding-top: 10vw;
   }
 }
 
@@ -286,6 +276,13 @@ body.expanded .sandwich-builder {
   height: 0px;
   transition: height 0.2s ease-in-out;
   position: relative;
+  height: 100px;
+}
+
+@media screen and (max-width: 900px) {
+  .layer-wrapper {
+    height: 10vw;
+  }
 }
 
 .layer-wrapper img {
@@ -294,9 +291,9 @@ body.expanded .sandwich-builder {
   bottom: 0;
 }
 
-body.edit-mode .layer-wrapper,
-body.expanded .layer-wrapper {
-  height: 200px;
+body.edit-mode .layer-wrapper:not(:first-of-type),
+body.expanded .layer-wrapper:not(:first-of-type) {
+  height: 300px;
 }
 
 .nav-button {
@@ -675,13 +672,6 @@ body.edit-mode .edit-button {
 #sandwich-preview {
   display: flex;
   flex-direction: column;
-  gap: 100px;
-}
-
-@media screen and (max-width: 900px) {
-  #sandwich-preview {
-    gap: 10vw;
-  }
 }
 
 #sandwich-preview img {
@@ -763,8 +753,7 @@ a:hover {
   border-radius: 2rem;
   box-shadow: var(--shadow-main);
   border: 8px solid var(--color-primary);
-  margin: 20vw auto 2rem auto;
-  margin-top: min(20vw, 280px);
+  margin: min(20vw, 280px) auto 2rem auto;
   max-width: 600px;
   position: relative;
   font-size: 1.2rem;
