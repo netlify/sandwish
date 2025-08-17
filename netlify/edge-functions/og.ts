@@ -15,9 +15,16 @@ interface PageData {
   title: string;
 }
 
-function rewriter(response: Response, data: PageData): Response {
+function rewriter(response: Response, data: PageData, state: State): Response {
   return (
     new HTMLRewriter()
+      // Sandwich data
+      .on("script#sandwich-data", {
+        element(element: Element) {
+          element.setInnerContent(`window.sandwich=${JSON.stringify(state)}`);
+        }
+      })
+
       // Image
       .on("meta[property='og:image']", {
         element(element: Element) {
@@ -90,11 +97,15 @@ export default async (req: Request, context: Context) => {
     .join("/")}.png`;
   const author = state.author ? ` by ${state.author}` : "";
 
-  return rewriter(await context.next(), {
-    description: `A truly delicious creation${author}. Stack yours and share it with the world!`,
-    imagePath,
-    title: state.title
-  });
+  return rewriter(
+    await context.next(),
+    {
+      description: `A truly delicious creation${author}. Stack yours and share it with the world!`,
+      imagePath,
+      title: state.title
+    },
+    state
+  );
 };
 
 export const config: Config = {

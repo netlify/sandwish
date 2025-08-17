@@ -149,7 +149,7 @@ class SandwichBuilder {
       this.toggleEditMode();
       this.setLoadingState(true);
     } else {
-      this.loadState(urlPath);
+      this.loadState();
     }
   }
 
@@ -211,16 +211,12 @@ class SandwichBuilder {
     }
   }
 
-  private async loadState(urlPath: string) {
-    const slug = urlPath.slice(1);
-
+  private loadState() {
     try {
-      const response = await fetch(`/sandwich/${slug}`);
+      const sandwichData = (window as any).sandwich;
 
-      if (response.ok) {
-        const state = await response.json();
-
-        this.setState(state);
+      if (sandwichData) {
+        this.setState(sandwichData);
         this.setLoadingState(true);
       }
     } catch {}
