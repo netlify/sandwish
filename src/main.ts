@@ -7,6 +7,10 @@ import {
 } from "./ingredients.js";
 import type { State } from "./types";
 
+function isMobile() {
+  return window.innerWidth <= 900;
+}
+
 class SandwichBuilder {
   private titleDisplay: HTMLHeadingElement;
   private titleEdit: HTMLInputElement;
@@ -224,7 +228,6 @@ class SandwichBuilder {
 
   public toggleEditMode(): boolean {
     const isEditMode = document.body.classList.toggle("edit-mode");
-    const isMobile = window.innerWidth <= 900;
 
     this.editButton.textContent = isEditMode ? "Save" : "New";
 
@@ -253,7 +256,7 @@ class SandwichBuilder {
       this.updateSandwich();
       this.stateSnapshot = JSON.stringify(this.serializeState());
     } else {
-      if (isMobile) {
+      if (isMobile()) {
         const title = window.prompt("What is the name of your creation?");
         const author = window.prompt("What is your name?");
 
@@ -598,29 +601,112 @@ window.addEventListener("load", async () => {
     inactive: "?"
   });
 
-  // Share tooltip functionality (no button control, only programmatic)
+  // Share tooltip functionality - custom implementation for image button
+  const shareButton = document.querySelector(
+    ".share-button"
+  ) as HTMLButtonElement;
   const shareTooltip = document.querySelector(
     ".share-tooltip"
   ) as HTMLDivElement;
-  const helpButton = document.querySelector(
-    ".help-button"
-  ) as HTMLButtonElement;
+  const shareImg = shareButton?.querySelector("img") as HTMLImageElement;
 
-  if (shareTooltip && helpButton) {
-    // Prevent share tooltip from closing when clicked
+  if (shareButton && shareTooltip && shareImg) {
+    let isShareActive = false;
+
+    const showShareTooltip = () => {
+      // Hide other tooltips first
+      document
+        .querySelectorAll(".help-tooltip, .share-tooltip")
+        .forEach((el) => {
+          if (el !== shareTooltip) el.classList.remove("active");
+        });
+
+      shareTooltip.classList.add("active");
+      isShareActive = true;
+      shareImg.style.display = "none";
+      shareButton.textContent = "×";
+    };
+
+    const hideShareTooltip = () => {
+      shareTooltip.classList.remove("active");
+      isShareActive = false;
+      shareButton.textContent = "";
+      shareButton.appendChild(shareImg);
+      shareImg.style.display = "block";
+    };
+
+    const renderMessageInTooltip = (message: string) => {
+      const tooltipText = shareTooltip.querySelector("p");
+      if (tooltipText) {
+        tooltipText.innerHTML = `<p>${message}</p>`;
+      }
+
+      showShareTooltip();
+      setTimeout(hideShareTooltip, 10_000);
+    };
+
+    // Button click handler
+    shareButton.addEventListener("click", async (event) => {
+      event.stopPropagation();
+
+      // Get sandwich title and ingredient count
+      const titleElement = document.querySelector(
+        ".title-display"
+      ) as HTMLElement;
+      const sandwichTitle = titleElement?.textContent || "My Sandwich";
+
+      // Count ingredients (excluding bread)
+      const ingredientsList = document.querySelectorAll("#ingredients-list li");
+      const totalIngredients = ingredientsList.length;
+      const fillingCount = Math.max(0, totalIngredients - 2); // Subtract 2 for top and bottom bread
+
+      const shareData = {
+        title: sandwichTitle,
+        url: window.location.href,
+        text: `I have turned ${fillingCount} incredible ingredients into a true culinary masterpiece I called ${sandwichTitle}. Come check it out and build your own`
+      };
+
+      if (isMobile()) {
+        try {
+          if (navigator.share) {
+            await navigator.share(shareData);
+
+            return;
+          }
+        } catch {
+          // no-op
+        }
+      }
+
+      if (isShareActive) {
+        hideShareTooltip();
+      } else {
+        try {
+          await navigator.clipboard.writeText(shareData.text);
+
+          renderMessageInTooltip(
+            "Shareable link and text copied to the clipboard"
+          );
+        } catch (err) {
+          // Fallback to regular tooltip if clipboard fails
+          showShareTooltip();
+        }
+      }
+    });
+
+    // Prevent tooltip from closing when clicked
     shareTooltip.addEventListener("click", (event) => {
       event.stopPropagation();
     });
 
-    const hideShareTooltip = () => {
-      shareTooltip.classList.remove("active");
-      // Reset help button to inactive state if no other tooltips are active
-      if (!document.querySelector(".help-tooltip.active")) {
-        helpButton.textContent = "?";
-      }
-    };
+    // Global click handler to close tooltip
+    document.addEventListener("click", () => {
+      if (isShareActive) hideShareTooltip();
+    });
+  }
 
-    // Make share tooltip controller globally accessible
+  // Make global showShareTooltip function for programmatic use
+  if (shareTooltip && shareButton && shareImg) {
     (window as any).showShareTooltip = () => {
       // Hide other tooltips first
       document
@@ -630,18 +716,16 @@ window.addEventListener("load", async () => {
         });
 
       shareTooltip.classList.add("active");
-      // Set help button to close state
-      helpButton.textContent = "×";
+      shareImg.style.display = "none";
+      shareButton.textContent = "×";
 
       // Auto-hide after 10 seconds
       setTimeout(() => {
-        hideShareTooltip();
+        shareTooltip.classList.remove("active");
+        shareButton.textContent = "";
+        shareButton.appendChild(shareImg);
+        shareImg.style.display = "block";
       }, 10_000);
     };
-
-    // Global click handler to close share tooltip
-    document.addEventListener("click", () => {
-      hideShareTooltip();
-    });
   }
 });
