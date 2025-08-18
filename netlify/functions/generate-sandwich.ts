@@ -7,8 +7,26 @@ import {
 } from "../../src/ingredients";
 
 const CANVAS_SIZE = 600;
-const IMAGE_FACTOR = 0.8;
-const SPACING_FACTOR = 0.06;
+const IMAGE_FACTOR = 0.4;
+const SPACING_FACTOR = 0.2;
+
+const gap = Math.round(CANVAS_SIZE * IMAGE_FACTOR * SPACING_FACTOR);
+const ingredientWidth = Math.round(CANVAS_SIZE * IMAGE_FACTOR);
+
+const getImage = async (url: string, width: number, height?: number) => {
+  const res = await fetch(url);
+  const buffer = await res.arrayBuffer();
+  const image = sharp(buffer);
+  const resizedBuffer = image.resize(width, height);
+  const metadata = await resizedBuffer.metadata();
+  const leftMargin = Math.round((CANVAS_SIZE - width) / 2);
+  const dimensions = {
+    width: metadata.width,
+    height: height ?? Math.round((metadata.height * width) / metadata.width)
+  };
+
+  return { buffer: await resizedBuffer.toBuffer(), dimensions, leftMargin };
+};
 
 export default async (req: Request) => {
   try {
@@ -38,111 +56,83 @@ export default async (req: Request) => {
     // Create array to hold all the image layers
     const layers: sharp.OverlayOptions[] = [];
 
-    // Calculate dimensions and offsets
-    const breadDimensions = Math.round(CANVAS_SIZE * IMAGE_FACTOR);
-    const breadOffset = (CANVAS_SIZE - breadDimensions) / 2;
-
-    const totalHeight =
-      breadDimensions +
-      (fillingIngredients.length + 1) * CANVAS_SIZE * SPACING_FACTOR;
-    const marginY = Math.round((CANVAS_SIZE - totalHeight) / 2);
-
-    let currentY = Math.max(0, marginY);
-
-    // Process top bread first
     // Get base URL from request URL
     const baseUrl = url.origin;
 
-    // Fetch top bread image
+    const background = await getImage(`${baseUrl}/background.png`, CANVAS_SIZE);
+
     const topFilename =
       typeof breadIngredient.filename === "string"
         ? breadIngredient.filename
         : breadIngredient.filename.top;
-    const topResponse = await fetch(`${baseUrl}/bread/${topFilename}`);
-    const topBuffer = await sharp(await topResponse.arrayBuffer())
-      .resize(breadDimensions, breadDimensions, {
-        fit: "contain",
-        background: { r: 0, g: 0, b: 0, alpha: 0 }
-      })
-      .toBuffer();
+    const top = await getImage(
+      `${baseUrl}/bread/${topFilename}`,
+      ingredientWidth
+    );
 
-    layers.push({
-      input: topBuffer,
-      top: currentY,
-      left: Math.round(breadOffset),
-      blend: "over" as const
-    });
+    const middle = await Promise.all(
+      fillingIngredients.map((filling) =>
+        getImage(`${baseUrl}/filling/${filling.filename}`, ingredientWidth)
+      )
+    );
 
-    currentY += CANVAS_SIZE * SPACING_FACTOR;
-
-    const jobs = fillingIngredients.map(async (filling) => {
-      // Fetch filling image
-      const fillingResponse = await fetch(
-        `${baseUrl}/filling/${filling.filename}`
-      );
-
-      const size = Math.round(CANVAS_SIZE * IMAGE_FACTOR);
-      const fillingBuffer = await sharp(await fillingResponse.arrayBuffer())
-        .resize(size, size, {
-          fit: "contain",
-          background: { r: 0, g: 0, b: 0, alpha: 0 }
-        })
-        .toBuffer();
-
-      const fillingDimensions = Math.round(CANVAS_SIZE * IMAGE_FACTOR);
-      const fillingOffset = (CANVAS_SIZE - fillingDimensions) / 2;
-
-      return {
-        input: fillingBuffer,
-        left: Math.round(fillingOffset),
-        blend: "over" as const
-      };
-    });
-
-    for (const layer of await Promise.all(jobs)) {
-      layers.push({ ...layer, top: currentY });
-
-      currentY += CANVAS_SIZE * SPACING_FACTOR;
-    }
-
-    // Process bottom bread last
-    // Split bread - use bottom piece
-    // Fetch bottom bread image
     const bottomFilename =
       typeof breadIngredient.filename === "string"
         ? breadIngredient.filename
         : breadIngredient.filename.bottom;
-    const bottomResponse = await fetch(`${baseUrl}/bread/${bottomFilename}`);
-    const bottomBuffer = await sharp(await bottomResponse.arrayBuffer())
-      .resize(breadDimensions, breadDimensions, {
-        fit: "contain",
-        background: { r: 0, g: 0, b: 0, alpha: 0 }
-      })
-      .toBuffer();
+    const bottom = await getImage(
+      `${baseUrl}/bread/${bottomFilename}`,
+      ingredientWidth
+    );
+
+    const totalHeight = top.dimensions.height + middle.length * gap + gap;
+
+    let currentY =
+      totalHeight > CANVAS_SIZE
+        ? 20
+        : Math.round((CANVAS_SIZE - totalHeight) / 2);
 
     layers.push({
-      input: bottomBuffer,
+      input: top.buffer,
       top: currentY,
-      left: Math.round(breadOffset),
-      blend: "over" as const
+      left: top.leftMargin,
+      blend: "dest-over" as const
     });
 
-    // Add background as the first layer
-    // Fetch background image
-    const backgroundResponse = await fetch(`${baseUrl}/background.png`);
-    const backgroundBuffer = await sharp(await backgroundResponse.arrayBuffer())
-      .resize(CANVAS_SIZE, CANVAS_SIZE, {
-        fit: "cover",
-        background: { r: 0, g: 0, b: 0, alpha: 0 }
-      })
-      .toBuffer();
+    currentY += top.dimensions.height;
 
-    // Add background as last layer (at the bottom)
+    for (const { buffer, dimensions, leftMargin } of middle) {
+      const layerY = currentY + gap - dimensions.height;
+
+      layers.push({
+        input: buffer,
+        top: layerY,
+        left: leftMargin,
+        blend: "dest-over" as const
+      });
+
+      currentY += gap;
+    }
+
     layers.push({
-      input: backgroundBuffer,
+      input: bottom.buffer,
+      top: currentY + gap - bottom.dimensions.height,
+      left: bottom.leftMargin,
+      blend: "dest-over" as const
+    });
+
+    layers.push({
+      input: background.buffer,
       top: 0,
       left: 0,
-      blend: "over" as const
+      blend: "dest-over" as const
+    });
+
+    layers.push({
+      input: background.buffer,
+      top: background.dimensions.height,
+      left: 0,
+      blend: "dest-over" as const
     });
 
     // Create final image with all layers
@@ -154,7 +144,7 @@ export default async (req: Request) => {
         background: { r: 0, g: 0, b: 0, alpha: 0 }
       }
     })
-      .composite(layers.reverse())
+      .composite(layers)
       .png()
       .toBuffer();
 
