@@ -625,9 +625,16 @@ body.edit-mode .expand-button {
   display: none;
 }
 
-.edit-button,
+.edit-button {
+  opacity: 1 !important;
+}
+
 .share-button {
   opacity: 1 !important;
+}
+
+body.edit-mode .share-button {
+  display: none;
 }
 
 .edit-button:hover {
