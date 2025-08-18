@@ -7,11 +7,8 @@ import {
 } from "../../src/ingredients";
 
 const CANVAS_SIZE = 600;
-const IMAGE_FACTOR = 0.4;
+const MAX_INGREDIENTS = 12;
 const SPACING_FACTOR = 0.2;
-
-const gap = Math.round(CANVAS_SIZE * IMAGE_FACTOR * SPACING_FACTOR);
-const ingredientWidth = Math.round(CANVAS_SIZE * IMAGE_FACTOR);
 
 const getImage = async (url: string, width: number, height?: number) => {
   const res = await fetch(url);
@@ -51,7 +48,12 @@ export default async (req: Request) => {
         }
         return ingredient;
       })
-      .reverse();
+      .reverse()
+      .slice(0, MAX_INGREDIENTS);
+
+    const imageFactor = getImageFactor(fillingIngredients.length);
+    const gap = Math.round(CANVAS_SIZE * imageFactor * SPACING_FACTOR);
+    const ingredientWidth = Math.round(CANVAS_SIZE * imageFactor);
 
     // Create array to hold all the image layers
     const layers: sharp.OverlayOptions[] = [];
@@ -162,6 +164,11 @@ export default async (req: Request) => {
     });
   }
 };
+
+function getImageFactor(numIngredients) {
+  // Linear interpolation.
+  return Math.max(Math.min(0.6 - (0.22 / 5) * (numIngredients - 3), 0.6), 0.38);
+}
 
 export const config: Config = {
   method: "GET",
