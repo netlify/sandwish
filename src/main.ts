@@ -487,30 +487,36 @@ class SandwichBuilder {
         }
       });
 
-      // Create image element
-      const img = document.createElement("img");
-
+      // Create image element only if there's a filename (not "No bun")
       let filename = ingredient.filename;
 
       if (typeof filename !== "string") {
         filename = index === 0 ? filename.top : filename.bottom;
       }
 
-      img.src = `/${layer.type}/${filename}`;
-      img.alt = ingredient.name;
-      img.style.width = "600px";
-      img.style.height = "auto";
+      if (filename) {
+        const img = document.createElement("img");
+        img.src = `/${layer.type}/${filename}`;
+        img.alt = ingredient.name;
+        img.style.width = "600px";
+        img.style.height = "auto";
 
-      // Track image loading
-      img.addEventListener("load", onImageLoaded);
-      img.addEventListener("error", onImageLoaded); // Count errors as loaded to avoid hanging
+        // Track image loading
+        img.addEventListener("load", onImageLoaded);
+        img.addEventListener("error", onImageLoaded); // Count errors as loaded to avoid hanging
 
-      wrapper.appendChild(img);
+        wrapper.appendChild(img);
+      } else {
+        // For "No bun", still call onImageLoaded to maintain loading count
+        onImageLoaded();
+      }
       wrapper.appendChild(select);
       this.previewElement.appendChild(wrapper);
 
-      // Add all ingredients to list in order
-      this.addIngredientToList(ingredient.name);
+      // Add all ingredients to list in order (except "No bun")
+      if (ingredient.name !== "No bun") {
+        this.addIngredientToList(ingredient.name);
+      }
     });
   }
 }

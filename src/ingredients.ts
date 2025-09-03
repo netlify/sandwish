@@ -8,6 +8,11 @@ export type IngredientType = "bread" | "filling";
 
 export const breads: Ingredient[] = [
   {
+    id: "no-bun",
+    name: "No bun",
+    filename: "",
+  },
+  {
     id: "bread-bagel-plain",
     name: "Bagel",
     filename: {
